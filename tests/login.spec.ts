@@ -7,7 +7,7 @@ import { DashboardPage } from "../pages/dashboard";
 // Env
 import { ENV } from "../utils/env";
 
-test.describe("Login Feature - BugBug SaaS", () => {
+test.describe("Login Feature - SaaS", () => {
   // ======================
   // TC001 - SUCCESS
   // ======================
