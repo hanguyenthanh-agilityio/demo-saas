@@ -37,6 +37,10 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
 
+      - name: Debug ENV
+        run: |
+          echo "BASE_URL=$BASE_URL"
+
       # 6. Run test
       - name: Run Playwright tests
         run: pnpm exec playwright test
