@@ -1,5 +1,5 @@
 // Fixtures
-import { test, expect } from "../fixtures/auth";
+import { test, expect } from "../fixtures/login-fixture";
 
 // Pages
 import { DashboardPage } from "../pages/dashboard";
@@ -20,9 +20,7 @@ test.describe("Login Feature - SaaS", () => {
       let res;
 
       await test.step("Send login request", async () => {
-        const responsePromise = loginPage.waitForLoginResponse();
-        await loginPage.login(ENV.EMAIL, ENV.PASSWORD);
-        res = await responsePromise;
+        res = await loginPage.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
       });
 
       await test.step("Verify API response", async () => {
@@ -86,9 +84,7 @@ test.describe("Login Feature - SaaS", () => {
 
         await test.step("Submit login form", async () => {
           if (c.type === "api") {
-            const promise = loginPage.waitForLoginResponse();
-            await loginPage.login(c.email, c.password);
-            response = await promise;
+            response = await loginPage.loginWithResponse(c.email, c.password);
           } else {
             await loginPage.login(c.email, c.password);
           }
@@ -101,11 +97,7 @@ test.describe("Login Feature - SaaS", () => {
         }
 
         await test.step("Verify error message displayed", async () => {
-          await loginPage.waitForErrorMessage();
-
-          await expect(loginPage.errorMessage.first()).toContainText(
-            /invalid|wrong|not|too many requests|error/i
-          );
+          await loginPage.expectErrorMessage();
         });
 
         await test.step("Verify still on login page", async () => {
@@ -122,11 +114,14 @@ test.describe("Login Feature - SaaS", () => {
     "TC007 - Verify password is masked by default",
     { tag: ["@login", "@ui"] },
     async ({ loginPage }) => {
-      await loginPage.passwordInput.fill("123456");
+      await test.step("Fill password input", async () => {
+        await loginPage.passwordInput.fill("123456");
+      });
 
-      const type = await loginPage.isPasswordMasked();
-
-      expect(type).toBe("password");
+      await test.step("Verify password is masked", async () => {
+        const type = await loginPage.isPasswordMasked();
+        expect(type).toBe("password");
+      });
     }
   );
 
@@ -134,22 +129,16 @@ test.describe("Login Feature - SaaS", () => {
     "TC008 - Verify user can toggle password visibility",
     { tag: ["@login", "@ui"] },
     async ({ loginPage }) => {
-      await loginPage.passwordInput.fill("123456");
-
-      await test.step("Ensure toggle button visible", async () => {
-        await expect(loginPage.togglePasswordBtn.first()).toBeVisible({
-          timeout: 10000,
-        });
+      await test.step("Fill password input", async () => {
+        await loginPage.passwordInput.fill("123456");
       });
 
       await test.step("Toggle to show password", async () => {
-        await loginPage.togglePassword();
-        await expect(loginPage.passwordInput).toHaveAttribute("type", "text");
+        await loginPage.togglePasswordWithCheck(true);
       });
 
       await test.step("Toggle to hide password", async () => {
-        await loginPage.togglePassword();
-        await expect(loginPage.passwordInput).toHaveAttribute("type", "password");
+        await loginPage.togglePasswordWithCheck(false);
       });
     }
   );

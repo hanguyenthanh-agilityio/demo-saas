@@ -1,5 +1,4 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { ENV } from "../utils/env";
+import { Page, Locator, expect, Response } from "@playwright/test";
 
 export class LoginPage {
   readonly page: Page;
@@ -12,10 +11,10 @@ export class LoginPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.emailInput = page.getByRole("textbox", { name: /email/i });
-    this.passwordInput = page.getByRole("textbox", { name: /password/i });
+    this.emailInput = page.getByRole("textbox", { name: "Email" });
+    this.passwordInput = page.getByRole("textbox", { name: "Password" });
 
-    this.loginButton = page.getByRole("group").getByRole("button", { name: /^log in$/i });
+    this.loginButton = page.getByRole("group").getByRole("button", { name: "Log in" });
 
     this.errorMessage = page.locator("text=/invalid|wrong|not|too many requests|error/i");
 
@@ -23,7 +22,7 @@ export class LoginPage {
   }
 
   async goto() {
-    await this.page.goto(ENV.BASE_URL);
+    await this.page.goto("/");
 
     await this.page.locator("header").getByRole("button", { name: "Log in" }).click();
 
@@ -37,24 +36,47 @@ export class LoginPage {
     await this.loginButton.click();
   }
 
-  async waitForLoginResponse() {
+  async waitForLoginResponse(): Promise<Response> {
     return this.page.waitForResponse(
       (res) => res.url().includes("/auth") && res.request().method() === "POST",
       { timeout: 10000 }
     );
   }
 
-  async waitForErrorMessage() {
-    await expect(this.errorMessage.first()).toBeVisible({
-      timeout: 10000,
-    });
+  async loginWithResponse(email: string, password: string) {
+    const responsePromise = this.page.waitForResponse(
+      (res) => res.url().includes("/auth") && res.request().method() === "POST",
+      { timeout: 10000 }
+    );
+    await this.login(email, password);
+    return await responsePromise;
   }
 
-  async isPasswordMasked() {
+  async waitForErrorMessage() {
+    await expect(this.errorMessage.first()).toBeVisible();
+  }
+
+  async expectErrorMessage() {
+    await this.waitForErrorMessage();
+    await expect(this.errorMessage.first()).toContainText(
+      /invalid|wrong|not|too many requests|error/i
+    );
+  }
+
+  async isPasswordMasked(): Promise<string | null> {
     return this.passwordInput.getAttribute("type");
   }
 
   async togglePassword() {
     await this.togglePasswordBtn.first().click();
+  }
+
+  async togglePasswordWithCheck(show: boolean) {
+    const type = await this.isPasswordMasked();
+    if ((show && type === "password") || (!show && type === "text")) {
+      await this.togglePassword();
+    }
+    const expectedType = show ? "text" : "password";
+    await expect(this.passwordInput).toHaveAttribute("type", expectedType);
   }
 }
