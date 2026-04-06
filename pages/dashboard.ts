@@ -8,7 +8,6 @@ export class DashboardPage {
   }
 
   async expectLoaded() {
-    // ✅ fix đúng URL của app
     await expect(this.page).toHaveURL(/tickets/);
   }
 }
