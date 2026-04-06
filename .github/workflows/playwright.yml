@@ -10,9 +10,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    environment: demo-saas
 
     permissions:
       contents: write
+
+    # SET ENV GLOBAL
+    env:
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      PASSWORD: ${{ secrets.PASSWORD }}
 
     steps:
       # 1. Checkout
@@ -33,21 +40,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 5. Install Playwright
+      # 5. Install Playwright Browsers
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
 
+      # Debug ENV
       - name: Debug ENV
         run: |
           echo "BASE_URL=$BASE_URL"
+          echo "EMAIL=$EMAIL"
+          echo "PASSWORD=***hidden***"
 
       # 6. Run test
       - name: Run Playwright tests
         run: pnpm exec playwright test
-        env:
-          EMAIL: ${{ secrets.EMAIL }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          BASE_URL: ${{ secrets.BASE_URL }}
 
       # 7. Upload report
       - name: Upload report
