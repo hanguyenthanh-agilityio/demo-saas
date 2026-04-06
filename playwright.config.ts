@@ -16,10 +16,18 @@ export default defineConfig({
 
   timeout: 60 * 1000,
 
-  reporter: [["html", { outputFolder: "playwright-report", open: "never" }]],
+  globalTimeout: 10 * 60 * 1000,
+
+  expect: {
+    timeout: 10000,
+  },
+
+  outputDir: "test-results",
+
+  reporter: [["list"], ["html", { outputFolder: "playwright-report", open: "never" }]],
 
   use: {
-    baseURL: ENV.BASE_URL,
+    baseURL: process.env.BASE_URL || ENV.BASE_URL,
 
     headless: isCI,
 
@@ -35,13 +43,11 @@ export default defineConfig({
   },
 
   projects: [
-    // setup
     {
       name: "setup",
       testMatch: /.*\.setup\.ts/,
     },
 
-    // API TEST
     {
       name: "api",
       testMatch: /.*api\.spec\.ts/,
@@ -50,7 +56,6 @@ export default defineConfig({
       },
     },
 
-    // LOGIN TEST
     {
       name: "auth",
       testMatch: /.*login\.spec\.ts/,
@@ -58,9 +63,9 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         storageState: undefined,
       },
+      dependencies: ["setup"],
     },
 
-    // E2E TEST
     {
       name: "chromium",
       testIgnore: [/.*login\.spec\.ts/, /.*api\.spec\.ts/],
