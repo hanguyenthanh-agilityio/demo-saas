@@ -1,4 +1,3 @@
-// types/login.d.ts
 import { LoginPage } from "../pages/login";
 import { Page } from "@playwright/test";
 
