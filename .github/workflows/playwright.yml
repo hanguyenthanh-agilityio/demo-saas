@@ -8,36 +8,38 @@ on:
 
 jobs:
   test:
-    name: Run Playwright Tests
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     permissions:
       contents: write
 
     steps:
-      # 1. Checkout code
+      # 1. Checkout
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
+      # 2. Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: "pnpm"
 
-      # 3. Install pnpm + dependencies
+      # 3. Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      # 4. Install dependencies
       - name: Install dependencies
-        run: |
-          npm install -g pnpm
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
-      # 4. Install Playwright browsers
+      # 5. Install Playwright
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
 
-      # 5. Run tests
+      # 6. Run test
       - name: Run Playwright tests
         run: pnpm exec playwright test
         env:
@@ -45,17 +47,16 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           BASE_URL: ${{ secrets.BASE_URL }}
 
-      # 6. Upload report artifact (để download)
-      - name: Upload Playwright Report
+      # 7. Upload report
+      - name: Upload report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
 
-      # 7. Deploy report to GitHub Pages
-      - name: Deploy to GitHub Pages
+      # 8. Deploy GitHub Pages
+      - name: Deploy report
         if: always()
         uses: peaceiris/actions-gh-pages@v3
         with:
