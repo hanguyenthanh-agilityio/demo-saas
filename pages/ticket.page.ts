@@ -20,7 +20,7 @@ export class TicketPage {
   }
 
   async goto() {
-    await this.page.goto("https://demo-saas.bugbug.io/ha-nguyen/tickets");
+    await this.page.goto("/ha-nguyen/tickets");
   }
 
   async openCreate() {
