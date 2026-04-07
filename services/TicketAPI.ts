@@ -27,4 +27,13 @@ export class TicketAPI {
       data: result,
     };
   }
+
+  async getList({ status }: { status: string }) {
+    const input = { 0: { json: { status } } };
+    const url = `/api/trpc/tickets.getList?batch=1&input=${encodeURIComponent(JSON.stringify(input))}`;
+    const res = await this.request.get(url);
+    const body = await res.json();
+    const tickets = body?.[0]?.result?.data || [];
+    return { status: res.status(), data: tickets };
+  }
 }

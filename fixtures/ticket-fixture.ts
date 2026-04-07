@@ -12,8 +12,18 @@ export const test = base.extend<Fixtures>({
     await use(new TicketPage(page));
   },
 
-  ticketAPI: async ({ request }, use) => {
-    await use(new TicketAPI(request));
+  ticketAPI: async ({ page, playwright }, use) => {
+    const cookies = await page.context().cookies();
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+
+    const apiRequest = await playwright.request.newContext({
+      baseURL: "https://demo-saas.bugbug.io",
+      extraHTTPHeaders: {
+        cookie: cookieHeader,
+      },
+    });
+
+    await use(new TicketAPI(apiRequest));
   },
 });
 
