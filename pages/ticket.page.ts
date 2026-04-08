@@ -36,7 +36,9 @@ export class TicketPage {
     this.statusSelect = page.getByTestId("ticket-status-select");
 
     // Table locators
-    this.ticketRows = page.locator('[data-testid="ticket-row"]');
+    this.ticketRows = page.locator(
+      'div[style*="--stack-gap"]:has(div[data-testid="ticket-status"])'
+    );
     this.loader = page.locator('[data-testid="ticket-loader"]');
     this.emptyState = page.getByText(/no tickets found/i);
 
@@ -134,10 +136,8 @@ export class TicketPage {
 
     if (count > 0) {
       await this.ticketRows.first().waitFor({ state: "visible", timeout: 5000 });
-    } else {
-      if ((await this.emptyState.count()) > 0) {
-        await this.emptyState.first().waitFor({ state: "visible", timeout: 5000 });
-      }
+    } else if ((await this.emptyState.count()) > 0) {
+      await this.emptyState.first().waitFor({ state: "visible", timeout: 5000 });
     }
   }
 
@@ -157,15 +157,15 @@ export class TicketPage {
   }
 
   async getTicketTitles() {
-    const titles = this.page.locator('div.mantine-Group-root p.mantine-Text-root[data-size="sm"]');
-    return titles.allTextContents();
+    return this.ticketRows
+      .locator('div[style*="width: calc(28.5rem"] p.mantine-Text-root[data-size="sm"]:visible')
+      .allTextContents();
   }
 
   // Search
   async search(keyword: string) {
     await this.searchInput.fill(keyword);
 
-    // wait API
     await this.page.waitForResponse((res) => {
       return (
         res.url().includes("tickets.getList") &&
@@ -196,13 +196,8 @@ export class TicketPage {
       .poll(
         async () => {
           await this.waitForTicketsOrEmpty();
-
-          const rows = await this.ticketRows.count();
-          if (rows === 0) return false;
-
           const titles = await this.getTicketTitles();
           if (titles.length === 0) return false;
-
           return titles.every((t) => t.toLowerCase().includes(normalized));
         },
         { timeout: 20000 }
