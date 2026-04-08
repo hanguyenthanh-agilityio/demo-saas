@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures/ticket-fixture";
 import { CreateTicketTRPC } from "../types/ticket";
 
-test.describe("🎫 Ticket Feature", () => {
+test.describe("Ticket Feature", () => {
   // =========================
   // TC009 - CREATE
   // =========================
