@@ -83,7 +83,6 @@ export class TicketPage {
   }
 
   async waitForTicketsOrEmpty() {
-    // Chờ table loader biến mất
     await this.waitForTableLoad();
 
     const count = await this.ticketRows.count();
