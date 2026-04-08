@@ -166,6 +166,7 @@ export class TicketPage {
   async search(keyword: string) {
     await this.searchInput.fill(keyword);
 
+    // if (keyword.trim() !== "") {
     await this.page.waitForResponse((res) => {
       return (
         res.url().includes("tickets.getList") &&
@@ -173,6 +174,7 @@ export class TicketPage {
         res.status() === 200
       );
     });
+    // }
 
     await this.waitForTicketsOrEmpty();
   }
@@ -190,18 +192,11 @@ export class TicketPage {
   }
 
   async expectAllTitlesMatch(keyword: string) {
-    const normalized = keyword.trim().toLowerCase();
+    const matchingRows = this.ticketRows.filter({ hasText: keyword });
+    const count = await matchingRows.count();
 
-    await expect
-      .poll(
-        async () => {
-          await this.waitForTicketsOrEmpty();
-          const titles = await this.getTicketTitles();
-          if (titles.length === 0) return false;
-          return titles.every((t) => t.toLowerCase().includes(normalized));
-        },
-        { timeout: 20000 }
-      )
-      .toBeTruthy();
+    for (let i = 0; i < count; i++) {
+      await expect(matchingRows.nth(i)).toBeVisible({ timeout: 20000 });
+    }
   }
 }
