@@ -21,34 +21,34 @@ test.describe("Ticket Search Feature", () => {
         await ticketPage.goToSearchPage();
       });
 
-      await test.step("Step 2: Exact match search", async () => {
+      await test.step("Step 2: Enter exact ticket title into search input and verify all visible results exactly match it", async () => {
         await ticketPage.search(keywords.exact);
         await ticketPage.expectAllTitlesMatch(keywords.exact);
       });
 
-      await test.step("Step 3: Partial match search", async () => {
+      await test.step("Step 3: Enter partial keyword into search input and verify all visible results contain that keyword", async () => {
         await ticketPage.search(keywords.partial);
         await ticketPage.expectAllTitlesMatch(keywords.partial);
       });
 
-      await test.step("Step 4: Case-insensitive search", async () => {
+      await test.step("Step 4: Enter ticket title in different case and verify search is case-insensitive", async () => {
         await ticketPage.search(keywords.caseInsensitive);
         await ticketPage.expectAllTitlesMatch(keywords.caseInsensitive);
       });
 
-      await test.step("Step 5: Trimmed input search", async () => {
+      await test.step("Step 5: Enter ticket title with leading/trailing spaces and verify results match trimmed value", async () => {
         await ticketPage.search(keywords.trimmed);
         await ticketPage.expectAllTitlesMatch(keywords.trimmed.trim());
       });
 
-      await test.step("Step 6: No results search", async () => {
+      await test.step("Step 6: Enter a keyword that matches no tickets and verify empty state is shown", async () => {
         await ticketPage.search(keywords.emptyResult);
 
         const emptyVisible = await ticketPage.emptyState.isVisible();
         expect(emptyVisible).toBeTruthy();
       });
 
-      await test.step("Step 7: Clear input by filling empty", async () => {
+      await test.step("Step 7: Clear the search input and verify all tickets are visible again", async () => {
         await ticketPage.clearSearch();
 
         const rows = await ticketPage.getVisibleTickets().count();
@@ -69,16 +69,16 @@ test.describe("Ticket Search Feature", () => {
         await ticketPage.goToSearchPage();
       });
 
-      await test.step("Step 2: Perform a search to populate results", async () => {
+      await test.step("Step 2: Enter exact ticket title into search input to filter results", async () => {
         await ticketPage.search(keywords.exact);
         await ticketPage.expectAllTitlesMatch(keywords.exact);
       });
 
-      await test.step("Step 3: Click Clear Search button", async () => {
+      await test.step("Step 3: Click the Clear Search button to reset the search input", async () => {
         await ticketPage.clickClearSearchBtn();
       });
 
-      await test.step("Step 4: Verify all tickets are visible after clearing", async () => {
+      await test.step("Step 4: Verify that all tickets are visible after clearing the search input", async () => {
         const rows = await ticketPage.getVisibleTickets().count();
         expect(rows).toBeGreaterThan(0);
       });

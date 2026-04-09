@@ -78,7 +78,7 @@ export class TicketPage {
     const orgPicker = this.page.locator('[data-testid="organization-picker"]:visible').first();
     await orgPicker.click();
 
-    // Wait dropdown menu to appear (Mantine tạo portal)
+    // Wait dropdown menu to appear
     const dropdownMenu = this.page.locator('div[role="menu"]:visible').first();
     await dropdownMenu.waitFor({ state: "visible", timeout: 5000 });
 
@@ -163,9 +163,9 @@ export class TicketPage {
     const count = await this.ticketRows.count();
 
     if (count > 0) {
-      await this.ticketRows.first().waitFor({ state: "visible", timeout: 5000 });
+      await expect(this.ticketRows.first()).toBeVisible({ timeout: 5000 });
     } else if ((await this.emptyState.count()) > 0) {
-      await this.emptyState.first().waitFor({ state: "visible", timeout: 5000 });
+      await expect(this.emptyState.first()).toBeVisible({ timeout: 5000 });
     }
   }
 
