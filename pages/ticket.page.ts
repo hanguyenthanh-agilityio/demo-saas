@@ -77,7 +77,7 @@ export class TicketPage {
     const orgPicker = this.page.locator('[data-testid="organization-picker"]:visible').first();
     await orgPicker.click();
 
-    // Wait dropdown menu to appear (Mantine tạo portal)
+    // Wait dropdown menu to appear
     const dropdownMenu = this.page.locator('div[role="menu"]:visible').first();
     await dropdownMenu.waitFor({ state: "visible", timeout: 5000 });
 
