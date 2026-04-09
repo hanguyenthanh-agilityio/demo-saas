@@ -1,6 +1,6 @@
 import { test, expect } from "../fixtures/ticket-fixture";
 
-test.describe("🔍 Ticket Search Feature", () => {
+test.describe("Ticket Search Feature", () => {
   const keywords = {
     exact: "Title 1",
     partial: "Tit",

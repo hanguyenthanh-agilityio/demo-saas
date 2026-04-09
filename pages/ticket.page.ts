@@ -1,6 +1,7 @@
 import { Page, Locator, expect } from "@playwright/test";
 
 export class TicketPage {
+  // Buttons & Inputs
   readonly newBtn: Locator;
   readonly submitBtn: Locator;
   readonly nameInput: Locator;
@@ -18,7 +19,7 @@ export class TicketPage {
   readonly searchInput: Locator;
   readonly clearSearchBtn: Locator;
 
-  // Navigation
+  // Navigation / Header / Dropdown
   readonly orgDropdown: Locator;
   readonly searchMenuItem: Locator;
 
@@ -88,6 +89,33 @@ export class TicketPage {
     await this.page.waitForURL("/search/tickets");
 
     // Wait tickets or empty state
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async goToSortPage() {
+    if (this.page.url().includes("/sort/tickets")) return;
+
+    const orgPicker = this.page.locator('[data-testid="organization-picker"]:visible').first();
+    await orgPicker.click();
+
+    await this.page
+      .locator('div[role="menu"]:visible')
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
+
+    const sortItem = this.page.getByText(/sort/i);
+    await expect(sortItem).toBeVisible({ timeout: 5000 });
+    await sortItem.scrollIntoViewIfNeeded();
+    await sortItem.click();
+
+    await this.page.waitForURL(/\/sort\/tickets/);
+
+    await this.page.waitForResponse(
+      (res) =>
+        res.url().includes("tickets.getList") &&
+        res.request().method() === "GET" &&
+        res.status() === 200
+    );
     await this.waitForTicketsOrEmpty();
   }
 
@@ -165,8 +193,6 @@ export class TicketPage {
   // Search
   async search(keyword: string) {
     await this.searchInput.fill(keyword);
-
-    // if (keyword.trim() !== "") {
     await this.page.waitForResponse((res) => {
       return (
         res.url().includes("tickets.getList") &&
@@ -174,8 +200,6 @@ export class TicketPage {
         res.status() === 200
       );
     });
-    // }
-
     await this.waitForTicketsOrEmpty();
   }
 
@@ -198,5 +222,41 @@ export class TicketPage {
     for (let i = 0; i < count; i++) {
       await expect(matchingRows.nth(i)).toBeVisible({ timeout: 20000 });
     }
+  }
+
+  // Title header / Sorting
+  async clickTitleHeader() {
+    const header = this.page
+      .locator("div")
+      .filter({ hasText: /^Title$/ })
+      .first();
+    await expect(header).toBeVisible({ timeout: 5000 });
+    await expect(header).toBeEnabled({ timeout: 5000 });
+
+    console.log("Clicking Title header...");
+
+    // Intercept API response to wait for sorted data
+    const [response] = await Promise.all([
+      this.page.waitForResponse(
+        (res) =>
+          res.url().includes("tickets.getList") &&
+          res.request().method() === "GET" &&
+          res.status() === 200
+      ),
+      header.click(), // trigger sort
+    ]);
+
+    console.log("Sort API response received:", response.url());
+
+    // Wait table to render fully
+    await this.waitForTicketsOrEmpty();
+
+    // Log ticket titles for debug
+    const titlesAfterClick = await this.getTicketTitles();
+    console.log("Ticket titles immediately after click:", titlesAfterClick);
+  }
+
+  async getUrl(): Promise<string> {
+    return this.page.url();
   }
 }
