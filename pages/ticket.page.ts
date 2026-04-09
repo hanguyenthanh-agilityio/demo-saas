@@ -257,38 +257,6 @@ export class TicketPage {
     }
   }
 
-  // Title header / Sorting
-  async clickTitleHeader() {
-    const header = this.page
-      .locator("div")
-      .filter({ hasText: /^Title$/ })
-      .first();
-    await expect(header).toBeVisible({ timeout: 5000 });
-    await expect(header).toBeEnabled({ timeout: 5000 });
-
-    console.log("Clicking Title header...");
-
-    // Intercept API response to wait for sorted data
-    const [response] = await Promise.all([
-      this.page.waitForResponse(
-        (res) =>
-          res.url().includes("tickets.getList") &&
-          res.request().method() === "GET" &&
-          res.status() === 200
-      ),
-      header.click(), // trigger sort
-    ]);
-
-    console.log("Sort API response received:", response.url());
-
-    // Wait table to render fully
-    await this.waitForTicketsOrEmpty();
-
-    // Log ticket titles for debug
-    const titlesAfterClick = await this.getTicketTitles();
-    console.log("Ticket titles immediately after click:", titlesAfterClick);
-  }
-
   async getUrl(): Promise<string> {
     return this.page.url();
   }
