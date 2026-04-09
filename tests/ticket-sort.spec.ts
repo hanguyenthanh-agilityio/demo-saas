@@ -1,38 +1,52 @@
 import { test, expect } from "../fixtures/ticket-fixture";
 
+function expectSortedAsc(arr: string[]) {
+  const sorted = [...arr].sort((a, b) => a.localeCompare(b));
+  expect(arr).toEqual(sorted);
+}
+
 test.describe("Ticket Sort Feature", () => {
+  // =========================
+  // TC030 - SORT BY TITLE
+  // =========================
   test(
-    "TC030 - Verify user can sort tickets by Title (ASC/reset/ASC)",
+    "TC030 - Verify user can sort tickets by Title",
     { tag: ["@ticket", "@sort", "@smoke"] },
     async ({ ticketPage }) => {
-      // ====================
-      // Step 1: Navigate to Sort page
-      // ====================
-      await test.step("Step 1: Navigate to Ticket List / Sort page", async () => {
+      let defaultTitles: string[] = [];
+      let ascTitles: string[] = [];
+
+      await test.step("Step 1: Navigate to Ticket List and Sort page", async () => {
         await ticketPage.goto();
         await ticketPage.goToSortPage();
       });
 
-      // ====================
-      // Step 2: Capture default ticket titles
-      // ====================
-      let defaultTitles: string[] = [];
-      await test.step("Step 2: Capture default ticket titles", async () => {
+      await test.step("Step 2: Capture default ticket titles before sorting", async () => {
         defaultTitles = await ticketPage.getTicketTitles();
         expect(defaultTitles.length).toBeGreaterThan(0);
       });
 
-      // ====================
-      // Step 3: Sort ASC
-      // ====================
-      let ascTitles: string[] = [];
-      await test.step("Step 3: Click Title header to sort ascending (A → Z)", async () => {
-        await ticketPage.clickTitleHeader(); // wait API + render
-        ascTitles = await ticketPage.getTicketTitles();
+      await test.step("Step 3: Click Title column header to sort tickets in ascending order", async () => {
+        await ticketPage.sortByTitle();
 
-        expect(ascTitles.length).toEqual(defaultTitles.length);
-        const isChanged = ascTitles.some((t, i) => t !== defaultTitles[i]);
-        expect(isChanged).toBeTruthy();
+        const { titles, url } = await ticketPage.getTitlesAndUrl();
+        ascTitles = titles;
+
+        expect(url).toContain("sortBy=title");
+        expect(url).toContain("order=asc");
+
+        expectSortedAsc(ascTitles);
+      });
+
+      await test.step("Step 4: Click Title column header again to reset sorting to default server order", async () => {
+        await ticketPage.sortByTitle();
+
+        const { titles, url } = await ticketPage.getTitlesAndUrl();
+
+        expect(url).toContain("sortBy=title");
+        expect(url).not.toContain("order=");
+
+        expect(titles).not.toEqual(ascTitles);
       });
     }
   );

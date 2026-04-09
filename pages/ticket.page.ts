@@ -1,6 +1,8 @@
 import { Page, Locator, expect } from "@playwright/test";
 
 export class TicketPage {
+  readonly page: Page;
+
   // Buttons & Inputs
   readonly newBtn: Locator;
   readonly submitBtn: Locator;
@@ -19,11 +21,16 @@ export class TicketPage {
   readonly searchInput: Locator;
   readonly clearSearchBtn: Locator;
 
-  // Navigation / Header / Dropdown
+  // Navigation
   readonly orgDropdown: Locator;
   readonly searchMenuItem: Locator;
 
-  constructor(private page: Page) {
+  // Sort
+  readonly titleHeader: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+
     // Buttons & inputs
     this.newBtn = page.getByRole("link", { name: "New" });
     this.submitBtn = page.getByRole("button", { name: "Submit" });
@@ -50,6 +57,12 @@ export class TicketPage {
     // Navigation
     this.orgDropdown = page.getByRole("button", { name: /ha nguyen/i });
     this.searchMenuItem = page.getByRole("menuitem", { name: /search/i });
+
+    // Sort
+    this.titleHeader = page
+      .locator("div")
+      .filter({ hasText: /^Title$/ })
+      .first();
   }
 
   // ====================
@@ -110,13 +123,18 @@ export class TicketPage {
 
     await this.page.waitForURL(/\/sort\/tickets/);
 
+    await this.waitForTicketListAPI();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  // Sort methods
+  async waitForTicketListAPI() {
     await this.page.waitForResponse(
       (res) =>
         res.url().includes("tickets.getList") &&
         res.request().method() === "GET" &&
         res.status() === 200
     );
-    await this.waitForTicketsOrEmpty();
   }
 
   async openCreate() {
@@ -145,6 +163,21 @@ export class TicketPage {
 
     // expects error message as sibling
     return map[field].locator("xpath=..").locator("text=must contain at least");
+  }
+
+  async sortByTitle() {
+    await expect(this.titleHeader).toBeVisible({ timeout: 5000 });
+    await expect(this.titleHeader).toBeEnabled({ timeout: 5000 });
+
+    await Promise.all([this.waitForTicketListAPI(), this.titleHeader.click()]);
+
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async getTitlesAndUrl() {
+    const [titles, url] = await Promise.all([this.getTicketTitles(), this.getUrl()]);
+
+    return { titles, url };
   }
 
   // ====================
