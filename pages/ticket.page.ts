@@ -317,6 +317,8 @@ export class TicketPage {
     await this.rowsPerPageSelect.click();
 
     await this.page.locator(`[role="option"][value="${size}"]`).click();
+
+    await this.waitForTicketsTableReload();
   }
 
   async goToPageByInput(value: string) {
