@@ -1,4 +1,5 @@
 import { test, expect } from "../fixtures/ticket-fixture";
+import { RowsPerPage } from "../types/ticket";
 
 test.describe("Ticket Pagination Feature", () => {
   // ====================
@@ -53,6 +54,7 @@ test.describe("Ticket Pagination Feature", () => {
       await test.step("Step 5: Click First button", async () => {
         if (!(await ticketPage.firstBtn.isDisabled())) {
           await ticketPage.clickFirst();
+          await ticketPage.waitForTicketsTableReload();
         }
       });
 
@@ -98,7 +100,7 @@ test.describe("Ticket Pagination Feature", () => {
         await ticketPage.goto();
       });
 
-      const sizes = ["10", "25"];
+      const sizes: RowsPerPage[] = ["10", "25"];
 
       for (const size of sizes) {
         await test.step(`Step 2: Change rows per page to ${size} and verify`, async () => {

@@ -50,6 +50,7 @@ test.describe("Ticket Search Feature", () => {
 
       await test.step("Step 7: Clear the search input and verify all tickets are visible again", async () => {
         await ticketPage.clearSearch();
+        await ticketPage.waitForTicketsTableReload();
 
         const rows = await ticketPage.getVisibleTickets().count();
         expect(rows).toBeGreaterThan(0);
