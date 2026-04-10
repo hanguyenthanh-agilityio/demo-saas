@@ -28,6 +28,15 @@ export class TicketPage {
   // Sort
   readonly titleHeader: Locator;
 
+  // Pagination
+  readonly nextBtn: Locator;
+  readonly prevBtn: Locator;
+  readonly lastBtn: Locator;
+  readonly firstBtn: Locator;
+
+  readonly goToPageInput: Locator;
+  readonly rowsPerPageSelect: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -63,6 +72,17 @@ export class TicketPage {
       .locator("div")
       .filter({ hasText: /^Title$/ })
       .first();
+
+    // Pagination
+    const pagination = page.locator(".mantine-Pagination-root");
+
+    this.firstBtn = pagination.locator("button").first();
+    this.prevBtn = pagination.locator("button").nth(1);
+    this.nextBtn = pagination.locator("button").nth(-2);
+    this.lastBtn = pagination.locator("button").last();
+
+    this.goToPageInput = page.getByRole("spinbutton", { name: /go to page/i });
+    this.rowsPerPageSelect = page.getByRole("textbox", { name: /rows per page/i });
   }
 
   // ====================
@@ -259,5 +279,63 @@ export class TicketPage {
 
   async getUrl(): Promise<string> {
     return this.page.url();
+  }
+  // Pagination methods
+  getPageBtn(page: number) {
+    return this.page.getByRole("button", { name: String(page), exact: true });
+  }
+
+  async goToPage(page: number) {
+    await this.getPageBtn(page).click();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async clickNext() {
+    if (await this.nextBtn.isDisabled()) return;
+
+    await this.nextBtn.click();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async clickPrev() {
+    if (await this.prevBtn.isDisabled()) return;
+
+    await this.prevBtn.click();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async clickFirst() {
+    if (await this.firstBtn.isDisabled()) return;
+
+    await this.firstBtn.click();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async clickLast() {
+    if (await this.lastBtn.isDisabled()) return;
+
+    await this.lastBtn.click();
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async changeRowsPerPage(size: string) {
+    await this.rowsPerPageSelect.click();
+
+    await this.page.locator(`[role="option"][value="${size}"]`).click();
+
+    await this.waitForTicketsOrEmpty();
+  }
+
+  async goToPageByInput(value: string) {
+    await this.goToPageInput.click();
+
+    await this.goToPageInput.fill("");
+
+    if (!isNaN(Number(value))) {
+      await this.goToPageInput.fill(value);
+    }
+
+    await this.page.keyboard.press("Enter");
+    await this.waitForTicketsOrEmpty();
   }
 }
