@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
+import { RowsPerPage } from "../types/ticket";
 
 export class TicketPage {
   readonly page: Page;
@@ -122,7 +123,7 @@ export class TicketPage {
     await this.page.waitForURL("/search/tickets");
 
     // Wait tickets or empty state
-    await this.waitForTicketsOrEmpty();
+    await this.waitForTicketsTableReload();
   }
 
   async goToSortPage() {
@@ -144,7 +145,7 @@ export class TicketPage {
     await this.page.waitForURL(/\/sort\/tickets/);
 
     await this.waitForTicketListAPI();
-    await this.waitForTicketsOrEmpty();
+    await this.waitForTicketsTableReload();
   }
 
   // Sort methods
@@ -191,7 +192,7 @@ export class TicketPage {
 
     await Promise.all([this.waitForTicketListAPI(), this.titleHeader.click()]);
 
-    await this.waitForTicketsOrEmpty();
+    await this.waitForTicketsTableReload();
   }
 
   async getTitlesAndUrl() {
@@ -210,7 +211,7 @@ export class TicketPage {
     }
   }
 
-  async waitForTicketsOrEmpty() {
+  async waitForTicketsTableReload() {
     await this.waitForTableLoad();
 
     const count = await this.ticketRows.count();
@@ -225,7 +226,6 @@ export class TicketPage {
   async filterByStatus(status: string) {
     await this.statusSelect.click();
     await this.page.getByRole("option", { name: status }).click();
-    await this.waitForTicketsOrEmpty();
   }
 
   getVisibleTickets() {
@@ -253,18 +253,18 @@ export class TicketPage {
         res.status() === 200
       );
     });
-    await this.waitForTicketsOrEmpty();
+    await this.waitForTicketsTableReload();
   }
 
   async clearSearch() {
     await this.searchInput.fill("");
-    await this.waitForTicketsOrEmpty();
+    await this.waitForTicketsTableReload();
   }
 
   async clickClearSearchBtn() {
     if (await this.clearSearchBtn.isVisible()) {
       await this.clearSearchBtn.click();
-      await this.waitForTicketsOrEmpty();
+      await this.waitForTicketsTableReload();
     }
   }
 
@@ -287,43 +287,36 @@ export class TicketPage {
 
   async goToPage(page: number) {
     await this.getPageBtn(page).click();
-    await this.waitForTicketsOrEmpty();
   }
 
   async clickNext() {
     if (await this.nextBtn.isDisabled()) return;
 
     await this.nextBtn.click();
-    await this.waitForTicketsOrEmpty();
   }
 
   async clickPrev() {
     if (await this.prevBtn.isDisabled()) return;
 
     await this.prevBtn.click();
-    await this.waitForTicketsOrEmpty();
   }
 
   async clickFirst() {
     if (await this.firstBtn.isDisabled()) return;
 
     await this.firstBtn.click();
-    await this.waitForTicketsOrEmpty();
   }
 
   async clickLast() {
     if (await this.lastBtn.isDisabled()) return;
 
     await this.lastBtn.click();
-    await this.waitForTicketsOrEmpty();
   }
 
-  async changeRowsPerPage(size: string) {
+  async changeRowsPerPage(size: RowsPerPage) {
     await this.rowsPerPageSelect.click();
 
     await this.page.locator(`[role="option"][value="${size}"]`).click();
-
-    await this.waitForTicketsOrEmpty();
   }
 
   async goToPageByInput(value: string) {
@@ -336,6 +329,5 @@ export class TicketPage {
     }
 
     await this.page.keyboard.press("Enter");
-    await this.waitForTicketsOrEmpty();
   }
 }

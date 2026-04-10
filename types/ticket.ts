@@ -14,3 +14,5 @@ type TRPCResponse<T> = {
 };
 
 export type CreateTicketTRPC = TRPCResponse<Ticket>[];
+
+export type RowsPerPage = "10" | "25";

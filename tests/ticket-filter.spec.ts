@@ -15,7 +15,7 @@ test.describe("Ticket Filter by Status", () => {
     for (const status of statuses) {
       await test.step(`Filter by status = ${status}`, async () => {
         await ticketPage.filterByStatus(status);
-        await ticketPage.waitForTicketsOrEmpty();
+        await ticketPage.waitForTicketsTableReload();
 
         // Verify filter UI is set correctly
         const selected = (await ticketPage.statusSelect.inputValue?.()) || status;
