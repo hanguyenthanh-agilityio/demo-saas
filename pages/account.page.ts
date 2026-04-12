@@ -28,12 +28,18 @@ export class AccountPage {
     this.successMsg = page.getByText(/success|updated/i);
   }
 
-  async fillProfile(first: string, last: string) {
-    await this.firstNameInput.clear();
-    if (first) await this.firstNameInput.fill(first);
+  async fillProfile(first?: string, last?: string) {
+    if (first !== undefined) {
+      await this.firstNameInput.fill(first);
+    }
 
-    await this.lastNameInput.clear();
-    if (last) await this.lastNameInput.fill(last);
+    if (last !== undefined) {
+      await this.lastNameInput.fill(last);
+    }
+  }
+
+  async clearInput(input: Locator) {
+    await input.fill("");
   }
 
   async submit() {
@@ -53,12 +59,5 @@ export class AccountPage {
     if (count !== undefined) {
       await expect(this.errorMsgs).toHaveCount(count);
     }
-  }
-
-  async clearInput(input: Locator) {
-    await input.click();
-    await input.press("Control+A");
-    await input.press("Delete");
-    await input.blur();
   }
 }

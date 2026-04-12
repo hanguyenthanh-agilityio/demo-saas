@@ -60,8 +60,7 @@ test.describe("Manage Account Feature", () => {
       await test.step("Step 4: Clear First Name field, enter valid Last Name, submit form, and verify validation error is shown for First Name", async () => {
         await page.reload();
 
-        await accountPage.clearInput(accountPage.firstNameInput);
-        await accountPage.lastNameInput.fill("Nguyen");
+        await accountPage.fillProfile("", "Nguyen");
 
         await expect(accountPage.firstNameInput).toHaveValue("");
 
