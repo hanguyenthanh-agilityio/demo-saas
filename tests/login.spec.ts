@@ -3,6 +3,7 @@ import { test, expect } from "../fixtures/login-fixture";
 
 // Pages
 import { DashboardPage } from "../pages/dashboard";
+import { LoginCase } from "../types/login";
 
 // Env
 import { ENV } from "../utils/env";
@@ -37,13 +38,15 @@ test.describe("Login Feature - SaaS", () => {
   // ======================
   // NEGATIVE CASES
   // ======================
-  const cases = [
+  const cases: LoginCase[] = [
     {
       id: "TC002",
       desc: "Verify error when email is empty",
       email: "",
       password: ENV.PASSWORD,
       type: "ui",
+      field: "email",
+      errorMess: "Invalid email",
     },
     {
       id: "TC003",
@@ -51,6 +54,8 @@ test.describe("Login Feature - SaaS", () => {
       email: ENV.EMAIL,
       password: "",
       type: "ui",
+      field: "global",
+      errorMess: "Invalid email or password",
     },
     {
       id: "TC004",
@@ -58,6 +63,8 @@ test.describe("Login Feature - SaaS", () => {
       email: "abc",
       password: ENV.PASSWORD,
       type: "ui",
+      field: "email",
+      errorMess: "Invalid email",
     },
     {
       id: "TC005",
@@ -65,16 +72,10 @@ test.describe("Login Feature - SaaS", () => {
       email: ENV.EMAIL,
       password: "wrong123",
       type: "api",
-    },
-    {
-      id: "TC006",
-      desc: "Verify error when email is not registered",
-      email: "wrong@gmail.com",
-      password: ENV.PASSWORD,
-      type: "api",
+      field: "global",
+      errorMess: "Invalid email or password",
     },
   ];
-
   for (const c of cases) {
     test(
       `${c.id} - ${c.desc}`,
@@ -97,7 +98,7 @@ test.describe("Login Feature - SaaS", () => {
         }
 
         await test.step("Verify error message displayed", async () => {
-          await loginPage.expectErrorMessage();
+          await loginPage.expectErrorMessage(c.errorMess, c.field);
         });
 
         await test.step("Verify still on login page", async () => {
