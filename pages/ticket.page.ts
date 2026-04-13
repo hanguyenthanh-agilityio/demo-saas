@@ -274,29 +274,36 @@ export class TicketPage {
     await expect(this.ticketDetailPopup).toBeVisible();
   }
 
-  async changeStatus(status: string) {
+  async changeStatus(status: TicketStatus) {
     const dropdownBtn = this.popupStatusSelect;
 
     await expect(dropdownBtn).toBeVisible();
-    await expect(dropdownBtn).toBeEnabled();
-
     await dropdownBtn.click();
 
-    const listbox = this.page.getByRole("listbox");
-
-    await expect(listbox).toBeVisible({ timeout: 5000 });
-
-    const option = listbox.getByRole("option").filter({
-      hasText: new RegExp(status, "i"),
+    const option = this.page.getByRole("option", {
+      name: new RegExp(status, "i"),
     });
 
-    await expect(option.first()).toBeVisible();
+    await expect(option).toBeVisible();
+    await option.click();
+  }
 
-    await option.first().click();
+  async getComments() {
+    const items = this.ticketDetailPopup.locator("textarea[readonly]");
+    const count = await items.count();
+
+    const values: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const val = await items.nth(i).inputValue();
+      if (val.trim()) values.push(val);
+    }
+
+    return values;
   }
 
   getCommentItem(text: string) {
-    return this.ticketDetailPopup.locator("textarea[readonly]").filter({
+    return this.ticketDetailPopup.locator("textarea[readonly]", {
       hasText: text,
     });
   }
@@ -311,12 +318,6 @@ export class TicketPage {
   async closePopupByIcon() {
     await expect(this.closePopupBtn).toBeVisible();
     await this.closePopupBtn.click();
-
-    await expect(this.ticketDetailPopup).toBeHidden();
-  }
-
-  async closePopupByOutsideClick() {
-    await this.page.mouse.click(10, 10);
 
     await expect(this.ticketDetailPopup).toBeHidden();
   }

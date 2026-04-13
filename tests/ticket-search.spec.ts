@@ -16,7 +16,7 @@ test.describe("Ticket Search Feature", () => {
     "TC024 - Verify user can search tickets by title (exact, partial, case-insensitive, trimmed, empty)",
     { tag: ["@ticket", "@search"] },
     async ({ ticketPage }) => {
-      await test.step("Step 1: Navigate to Ticket List and Search page", async () => {
+      await test.step("Step 1: Navigate to Ticket List, user click search option in Organization Dropdown", async () => {
         await ticketPage.goto();
         await ticketPage.selectOrganizationOption("search");
       });

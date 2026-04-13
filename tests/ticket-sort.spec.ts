@@ -15,7 +15,7 @@ test.describe("Ticket Sort Feature", () => {
     async ({ ticketPage }) => {
       let ascTitles: string[] = [];
 
-      await test.step("Step 1: Navigate to Ticket List and Sort page", async () => {
+      await test.step("Step 1: Navigate to Ticket List, user click sort option in Organization Dropdown", async () => {
         await ticketPage.goto();
         await ticketPage.selectOrganizationOption("sort");
       });
