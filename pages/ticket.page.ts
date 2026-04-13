@@ -28,6 +28,22 @@ export class TicketPage {
   // Sort
   readonly titleHeader: Locator;
 
+  // Ticket Detail Popup
+  readonly ticketDetailPopup: Locator;
+  readonly closePopupBtn: Locator;
+
+  // Status inside popup
+  readonly popupStatusSelect: Locator;
+
+  //  Updated label
+  readonly updatedNowLabel: Locator;
+  readonly updatedLabel: Locator;
+
+  // Comment
+  readonly commentInput: Locator;
+  readonly sendCommentBtn: Locator;
+  readonly commentsList: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -63,6 +79,19 @@ export class TicketPage {
       .locator("div")
       .filter({ hasText: /^Title$/ })
       .first();
+
+    // Update locators
+    this.ticketDetailPopup = page.getByRole("dialog");
+    this.closePopupBtn = this.ticketDetailPopup.locator("button:has(svg)");
+
+    this.popupStatusSelect = this.ticketDetailPopup.getByTestId("ticket-status-select");
+
+    this.updatedNowLabel = page.getByText(/updated now/i);
+    this.updatedLabel = page.getByText(/updated/i);
+
+    this.commentInput = this.ticketDetailPopup.getByPlaceholder("Add a comment...");
+    this.sendCommentBtn = this.ticketDetailPopup.getByRole("button", { name: /send/i });
+    this.commentsList = this.ticketDetailPopup.locator('.mantine-Paper-root:has-text("")');
   }
 
   // ====================
@@ -221,6 +250,83 @@ export class TicketPage {
     return this.ticketRows
       .locator('div[style*="width: calc(28.5rem"] p.mantine-Text-root[data-size="sm"]:visible')
       .allTextContents();
+  }
+
+  // Ticket Detail Actions
+  getTicketByTitle(title: string) {
+    return this.ticketRows.filter({ hasText: title }).first();
+  }
+
+  getTicketByTitleText(title: string) {
+    return this.page.getByText(title).first();
+  }
+
+  async openTicketByTitle(title: string) {
+    let ticket = this.getTicketByTitle(title);
+
+    if ((await ticket.count()) === 0) {
+      ticket = this.getTicketByTitleText(title);
+    }
+
+    await expect(ticket).toBeVisible({ timeout: 10000 });
+
+    await ticket.scrollIntoViewIfNeeded();
+
+    await ticket.click();
+
+    await this.page.waitForSelector('[role="dialog"]', {
+      state: "visible",
+      timeout: 10000,
+    });
+
+    await expect(this.ticketDetailPopup).toBeVisible();
+  }
+
+  async changeStatus(status: string) {
+    const dropdownBtn = this.popupStatusSelect;
+
+    await expect(dropdownBtn).toBeVisible();
+    await expect(dropdownBtn).toBeEnabled();
+
+    await dropdownBtn.click();
+
+    const listbox = this.page.getByRole("listbox");
+
+    await expect(listbox).toBeVisible({ timeout: 5000 });
+
+    const option = listbox.getByRole("option").filter({
+      hasText: new RegExp(status, "i"),
+    });
+
+    await expect(option.first()).toBeVisible();
+
+    await option.first().click();
+  }
+
+  getCommentItem(text: string) {
+    return this.ticketDetailPopup.locator("textarea[readonly]").filter({
+      hasText: text,
+    });
+  }
+
+  async addComment(text: string) {
+    await this.commentInput.fill(text);
+
+    await this.sendCommentBtn.click();
+    await expect(this.commentInput).toHaveValue("");
+  }
+
+  async closePopupByIcon() {
+    await expect(this.closePopupBtn).toBeVisible();
+    await this.closePopupBtn.click();
+
+    await expect(this.ticketDetailPopup).toBeHidden();
+  }
+
+  async closePopupByOutsideClick() {
+    await this.page.mouse.click(10, 10);
+
+    await expect(this.ticketDetailPopup).toBeHidden();
   }
 
   // Search
