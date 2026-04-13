@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
-import { RowsPerPage } from "../types/ticket";
+import { RowsPerPage, TicketStatus } from "../types/ticket";
 
 export class TicketPage {
   readonly page: Page;
@@ -217,9 +217,15 @@ export class TicketPage {
     ]);
   }
 
-  async filterByStatus(status: string) {
+  async filterByStatus(status: TicketStatus) {
     await this.statusSelect.click();
-    await this.page.getByRole("option", { name: status }).click();
+
+    const option = this.page.getByRole("option", {
+      name: new RegExp(status, "i"),
+    });
+
+    await expect(option).toBeVisible();
+    await option.click();
   }
 
   getVisibleTickets() {
@@ -228,6 +234,7 @@ export class TicketPage {
 
   async getVisibleTicketStatuses() {
     const statuses = this.page.locator('div[data-testid="ticket-status"] .mantine-Badge-label');
+    await expect(statuses.first()).toBeVisible();
     return statuses.allTextContents();
   }
 
