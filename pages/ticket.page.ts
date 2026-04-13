@@ -41,6 +41,8 @@ export class TicketPage {
   // Ticket Detail Popup
   readonly ticketDetailPopup: Locator;
   readonly closePopupBtn: Locator;
+
+  // Status inside popup
   readonly popupStatusSelect: Locator;
 
   //  Updated label
@@ -102,6 +104,7 @@ export class TicketPage {
     // Update locators
     this.ticketDetailPopup = page.getByRole("dialog");
     this.closePopupBtn = this.ticketDetailPopup.locator("button:has(svg)");
+
     this.popupStatusSelect = this.ticketDetailPopup.getByTestId("ticket-status-select");
     this.updatedNowLabel = page.getByText(/updated now/i);
     this.updatedLabel = page.getByText(/updated/i);
@@ -135,31 +138,10 @@ export class TicketPage {
 
     await menuItem.click();
 
-    // Wait navigation to Search page
-    await this.page.waitForURL("/search/tickets");
+    // Wait navigation to Search/Sort page
+    await this.page.waitForURL(new RegExp(`/${option}/tickets`));
 
     // Wait tickets or empty state
-    await this.waitForTicketsTableReload();
-  }
-
-  async goToSortPage() {
-    if (this.page.url().includes("/sort/tickets")) return;
-
-    const orgPicker = this.page.locator('[data-testid="organization-picker"]:visible').first();
-    await orgPicker.click();
-
-    await this.page
-      .locator('div[role="menu"]:visible')
-      .first()
-      .waitFor({ state: "visible", timeout: 5000 });
-
-    const sortItem = this.page.getByText(/sort/i);
-    await expect(sortItem).toBeVisible({ timeout: 5000 });
-    await sortItem.scrollIntoViewIfNeeded();
-    await sortItem.click();
-
-    await this.page.waitForURL(/\/sort\/tickets/);
-
     await this.waitForTicketsTableReload();
   }
 
@@ -229,13 +211,10 @@ export class TicketPage {
   async waitForTicketsTableReload() {
     await this.waitForTableLoad();
 
-    const count = await this.ticketRows.count();
-
-    if (count > 0) {
-      await expect(this.ticketRows.first()).toBeVisible({ timeout: 5000 });
-    } else if ((await this.emptyState.count()) > 0) {
-      await expect(this.emptyState.first()).toBeVisible({ timeout: 5000 });
-    }
+    await Promise.race([
+      this.ticketRows.first().waitFor({ state: "visible", timeout: 5000 }),
+      this.emptyState.first().waitFor({ state: "visible", timeout: 5000 }),
+    ]);
   }
 
   async filterByStatus(status: string) {
@@ -256,6 +235,83 @@ export class TicketPage {
     return this.ticketRows
       .locator('div[style*="width: calc(28.5rem"] p.mantine-Text-root[data-size="sm"]:visible')
       .allTextContents();
+  }
+
+  // Ticket Detail Actions
+  getTicketByTitle(title: string) {
+    return this.ticketRows.filter({ hasText: title }).first();
+  }
+
+  getTicketByTitleText(title: string) {
+    return this.page.getByText(title).first();
+  }
+
+  async openTicketByTitle(title: string) {
+    let ticket = this.getTicketByTitle(title);
+
+    if ((await ticket.count()) === 0) {
+      ticket = this.getTicketByTitleText(title);
+    }
+
+    await expect(ticket).toBeVisible({ timeout: 10000 });
+
+    await ticket.scrollIntoViewIfNeeded();
+
+    await ticket.click();
+
+    await this.page.waitForSelector('[role="dialog"]', {
+      state: "visible",
+      timeout: 10000,
+    });
+
+    await expect(this.ticketDetailPopup).toBeVisible();
+  }
+
+  async changeStatus(status: string) {
+    const dropdownBtn = this.popupStatusSelect;
+
+    await expect(dropdownBtn).toBeVisible();
+    await expect(dropdownBtn).toBeEnabled();
+
+    await dropdownBtn.click();
+
+    const listbox = this.page.getByRole("listbox");
+
+    await expect(listbox).toBeVisible({ timeout: 5000 });
+
+    const option = listbox.getByRole("option").filter({
+      hasText: new RegExp(status, "i"),
+    });
+
+    await expect(option.first()).toBeVisible();
+
+    await option.first().click();
+  }
+
+  getCommentItem(text: string) {
+    return this.ticketDetailPopup.locator("textarea[readonly]").filter({
+      hasText: text,
+    });
+  }
+
+  async addComment(text: string) {
+    await this.commentInput.fill(text);
+
+    await this.sendCommentBtn.click();
+    await expect(this.commentInput).toHaveValue("");
+  }
+
+  async closePopupByIcon() {
+    await expect(this.closePopupBtn).toBeVisible();
+    await this.closePopupBtn.click();
+
+    await expect(this.ticketDetailPopup).toBeHidden();
+  }
+
+  async closePopupByOutsideClick() {
+    await this.page.mouse.click(10, 10);
+
+    await expect(this.ticketDetailPopup).toBeHidden();
   }
 
   // Search

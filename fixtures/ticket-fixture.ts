@@ -1,10 +1,11 @@
-import { test as base } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { TicketPage } from "../pages/ticket.page";
 import { TicketAPI } from "../services/TicketAPI";
 
 type Fixtures = {
   ticketPage: TicketPage;
   ticketAPI: TicketAPI;
+  createdTicketTitle: string;
 };
 
 export const test = base.extend<Fixtures>({
@@ -24,6 +25,28 @@ export const test = base.extend<Fixtures>({
     });
 
     await use(new TicketAPI(apiRequest));
+  },
+
+  createdTicketTitle: async ({ ticketPage }, use) => {
+    const title = `Title ${Date.now()}`;
+
+    await ticketPage.goto();
+    await ticketPage.openCreate();
+
+    await ticketPage.fillForm({
+      name: "Joe",
+      title,
+      description: "Test update",
+    });
+
+    await ticketPage.submit();
+
+    await expect(ticketPage.successMsg).toBeVisible();
+
+    await ticketPage.goto();
+    await ticketPage.waitForTicketsTableReload();
+
+    await use(title);
   },
 });
 

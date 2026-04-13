@@ -21,7 +21,7 @@ test.describe("Ticket Sort Feature", () => {
       });
 
       await test.step("Step 2: Capture default ticket titles before sorting", async () => {
-        await ticketPage.waitForTicketsOrEmpty();
+        await ticketPage.waitForTicketsTableReload();
       });
 
       await test.step("Step 3: Click Title column header to sort tickets in ascending order", async () => {

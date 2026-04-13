@@ -32,16 +32,18 @@ export class AccountPage {
     await this.page.goto("/ha-nguyen/tickets");
   }
 
-  async fillProfile(data: { firstName?: string; lastName?: string }) {
-    const { firstName, lastName } = data;
-
-    if (firstName !== undefined) {
-      await this.firstNameInput.fill(firstName);
+  async fillProfile(first?: string, last?: string) {
+    if (first !== undefined) {
+      await this.firstNameInput.fill(first);
     }
 
-    if (lastName !== undefined) {
-      await this.lastNameInput.fill(lastName);
+    if (last !== undefined) {
+      await this.lastNameInput.fill(last);
     }
+  }
+
+  async clearInput(input: Locator) {
+    await input.fill("");
   }
 
   async submit() {
@@ -61,12 +63,5 @@ export class AccountPage {
     if (count !== undefined) {
       await expect(this.errorMsgs).toHaveCount(count);
     }
-  }
-
-  async clearInput(input: Locator) {
-    await input.click();
-    await input.press("Control+A");
-    await input.press("Delete");
-    await input.blur();
   }
 }

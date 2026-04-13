@@ -52,10 +52,7 @@ test.describe("Manage Account Feature", () => {
       });
 
       await test.step("Step 3: Enter valid First Name and Last Name, submit form, and verify success message is displayed", async () => {
-        await accountPage.fillProfile({
-          firstName: validData.firstName,
-          lastName: validData.lastName,
-        });
+        await accountPage.fillProfile(validData.firstName, validData.lastName);
 
         await accountPage.submit();
         await expect(accountPage.successMsg).toBeVisible();
@@ -64,10 +61,7 @@ test.describe("Manage Account Feature", () => {
       await test.step("Step 4: Clear First Name field, enter valid Last Name, submit form, and verify validation error is shown for First Name", async () => {
         await page.reload();
 
-        await accountPage.fillProfile({
-          firstName: "",
-          lastName: "Nguyen",
-        });
+        await accountPage.fillProfile("", "Nguyen");
 
         await expect(accountPage.firstNameInput).toHaveValue("");
 
@@ -76,10 +70,8 @@ test.describe("Manage Account Feature", () => {
       });
 
       await test.step("Step 5: Enter valid First Name, clear Last Name field, submit form, and verify validation error is shown for Last Name", async () => {
-        await accountPage.fillProfile({
-          firstName: "Ha",
-          lastName: "",
-        });
+        await accountPage.firstNameInput.fill("Ha");
+        await accountPage.clearInput(accountPage.lastNameInput);
 
         await expect(accountPage.lastNameInput).toHaveValue("");
 
@@ -88,10 +80,8 @@ test.describe("Manage Account Feature", () => {
       });
 
       await test.step("Step 6: Clear both First Name and Last Name fields, submit form, and verify validation errors are shown for both fields", async () => {
-        await accountPage.fillProfile({
-          firstName: "",
-          lastName: "",
-        });
+        await accountPage.clearInput(accountPage.firstNameInput);
+        await accountPage.clearInput(accountPage.lastNameInput);
 
         await expect(accountPage.firstNameInput).toHaveValue("");
         await expect(accountPage.lastNameInput).toHaveValue("");
