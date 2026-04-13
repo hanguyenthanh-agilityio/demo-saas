@@ -119,8 +119,7 @@ test.describe("Login Feature - SaaS", () => {
       });
 
       await test.step("Verify password is masked", async () => {
-        const type = await loginPage.isPasswordMasked();
-        expect(type).toBe("password");
+        await expect(loginPage.passwordInput).toHaveAttribute("type", "password");
       });
     }
   );
@@ -134,11 +133,11 @@ test.describe("Login Feature - SaaS", () => {
       });
 
       await test.step("Toggle to show password", async () => {
-        await loginPage.togglePasswordWithCheck(true);
+        await loginPage.setPasswordVisibility(true);
       });
 
       await test.step("Toggle to hide password", async () => {
-        await loginPage.togglePasswordWithCheck(false);
+        await loginPage.setPasswordVisibility(false);
       });
     }
   );

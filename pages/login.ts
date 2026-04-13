@@ -18,7 +18,7 @@ export class LoginPage {
 
     this.errorMessage = page.locator("text=/invalid|wrong|not|too many requests|error/i");
 
-    this.togglePasswordBtn = page.locator('[class*="PasswordInput-visibilityToggle"]');
+    this.togglePasswordBtn = page.locator(".mantine-PasswordInput-visibilityToggle");
   }
 
   async goto() {
@@ -63,20 +63,19 @@ export class LoginPage {
     );
   }
 
-  async isPasswordMasked(): Promise<string | null> {
-    return this.passwordInput.getAttribute("type");
-  }
+  async setPasswordVisibility(show: boolean) {
+    const currentType = await this.passwordInput.getAttribute("type");
 
-  async togglePassword() {
-    await this.togglePasswordBtn.first().click();
-  }
+    const isVisible = currentType === "text";
 
-  async togglePasswordWithCheck(show: boolean) {
-    const type = await this.isPasswordMasked();
-    if ((show && type === "password") || (!show && type === "text")) {
-      await this.togglePassword();
+    if (show && !isVisible) {
+      await this.togglePasswordBtn.click();
     }
-    const expectedType = show ? "text" : "password";
-    await expect(this.passwordInput).toHaveAttribute("type", expectedType);
+
+    if (!show && isVisible) {
+      await this.togglePasswordBtn.click();
+    }
+
+    await expect(this.passwordInput).toHaveAttribute("type", show ? "text" : "password");
   }
 }
