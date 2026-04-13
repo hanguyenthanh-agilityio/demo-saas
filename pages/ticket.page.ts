@@ -38,6 +38,20 @@ export class TicketPage {
   readonly goToPageInput: Locator;
   readonly rowsPerPageSelect: Locator;
 
+  // Ticket Detail Popup
+  readonly ticketDetailPopup: Locator;
+  readonly closePopupBtn: Locator;
+  readonly popupStatusSelect: Locator;
+
+  //  Updated label
+  readonly updatedNowLabel: Locator;
+  readonly updatedLabel: Locator;
+
+  // Comment
+  readonly commentInput: Locator;
+  readonly sendCommentBtn: Locator;
+  readonly commentsList: Locator;
+
   constructor(page: Page) {
     this.page = page;
 
@@ -84,6 +98,16 @@ export class TicketPage {
 
     this.goToPageInput = page.getByRole("spinbutton", { name: /go to page/i });
     this.rowsPerPageSelect = page.getByRole("textbox", { name: /rows per page/i });
+
+    // Update locators
+    this.ticketDetailPopup = page.getByRole("dialog");
+    this.closePopupBtn = this.ticketDetailPopup.locator("button:has(svg)");
+    this.popupStatusSelect = this.ticketDetailPopup.getByTestId("ticket-status-select");
+    this.updatedNowLabel = page.getByText(/updated now/i);
+    this.updatedLabel = page.getByText(/updated/i);
+    this.commentInput = this.ticketDetailPopup.getByPlaceholder("Add a comment...");
+    this.sendCommentBtn = this.ticketDetailPopup.getByRole("button", { name: /send/i });
+    this.commentsList = this.ticketDetailPopup.locator('.mantine-Paper-root:has-text("")');
   }
 
   // ====================
