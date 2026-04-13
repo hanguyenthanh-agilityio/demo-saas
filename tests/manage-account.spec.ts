@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect } from "../fixtures/account-fixture";
 import { getUniqueName } from "../utils/data";
 
@@ -8,17 +9,17 @@ test.describe("Manage Account Feature", () => {
   test(
     "TC034 - Verify user can open and close Profile Menu by hovering over avatar",
     { tag: ["@account", "@menu"] },
-    async ({ page, header }) => {
-      await page.goto("/ha-nguyen/tickets");
-
+    async ({ header, accountPage }) => {
       await test.step("Step 1: Hover over avatar and verify Profile Menu is displayed with all options", async () => {
+        await accountPage.gotoTicketPage();
+
         await header.hoverAvatar();
 
         await expect(header.manageAccountItem).toBeVisible();
         await expect(header.logoutItem).toBeVisible();
       });
 
-      await test.step("Step 2: Move mouse away from avatar and verify Profile Menu is hidden", async () => {
+      await test.step("Step 2: Move mouse away → Profile Menu hidden", async () => {
         await header.moveMouseAway();
       });
     }
@@ -37,7 +38,7 @@ test.describe("Manage Account Feature", () => {
       };
 
       await test.step("Step 1: Navigate to Manage Account page and verify profile form is visible", async () => {
-        await page.goto("/ha-nguyen/tickets");
+        await accountPage.gotoTicketPage();
         await header.goToManageAccount();
 
         await expect(accountPage.firstNameInput).toBeVisible();

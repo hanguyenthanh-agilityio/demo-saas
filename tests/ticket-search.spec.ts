@@ -18,7 +18,7 @@ test.describe("Ticket Search Feature", () => {
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List and Search page", async () => {
         await ticketPage.goto();
-        await ticketPage.goToSearchPage();
+        await ticketPage.selectOrganizationOption("search");
       });
 
       await test.step("Step 2: Enter exact ticket title into search input and verify all visible results exactly match it", async () => {
@@ -50,6 +50,7 @@ test.describe("Ticket Search Feature", () => {
 
       await test.step("Step 7: Clear the search input and verify all tickets are visible again", async () => {
         await ticketPage.clearSearch();
+        await ticketPage.waitForTicketsTableReload();
 
         const rows = await ticketPage.getVisibleTickets().count();
         expect(rows).toBeGreaterThan(0);
@@ -66,7 +67,7 @@ test.describe("Ticket Search Feature", () => {
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List and Search page", async () => {
         await ticketPage.goto();
-        await ticketPage.goToSearchPage();
+        await ticketPage.selectOrganizationOption("search");
       });
 
       await test.step("Step 2: Enter exact ticket title into search input to filter results", async () => {

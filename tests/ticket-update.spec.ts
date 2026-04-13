@@ -28,7 +28,7 @@ test.describe("Update Ticket Feature", () => {
 
       await test.step("User returns to ticket list", async () => {
         await ticketPage.goto();
-        await ticketPage.waitForTicketsOrEmpty();
+        await ticketPage.waitForTicketsTableReload();
       });
 
       await test.step("User opens the ticket details", async () => {

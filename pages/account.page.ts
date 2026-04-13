@@ -28,6 +28,10 @@ export class AccountPage {
     this.successMsg = page.getByText(/success|updated/i);
   }
 
+  async gotoTicketPage() {
+    await this.page.goto("/ha-nguyen/tickets");
+  }
+
   async fillProfile(first?: string, last?: string) {
     if (first !== undefined) {
       await this.firstNameInput.fill(first);

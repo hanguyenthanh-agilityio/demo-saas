@@ -44,7 +44,7 @@ export const test = base.extend<Fixtures>({
     await expect(ticketPage.successMsg).toBeVisible();
 
     await ticketPage.goto();
-    await ticketPage.waitForTicketsOrEmpty();
+    await ticketPage.waitForTicketsTableReload();
 
     await use(title);
   },
