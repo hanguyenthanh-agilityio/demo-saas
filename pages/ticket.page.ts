@@ -411,4 +411,9 @@ export class TicketPage {
 
     await this.page.keyboard.press("Enter");
   }
+
+  async expectFieldError(field: "name" | "title" | "description") {
+    const error = this.getErrorByField(field);
+    await expect(error).toBeVisible();
+  }
 }

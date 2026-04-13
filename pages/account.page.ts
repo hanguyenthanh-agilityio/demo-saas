@@ -8,7 +8,6 @@ export class AccountPage {
   readonly saveBtn: Locator;
 
   readonly successMsg: Locator;
-  readonly errorMsgs: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,7 +18,6 @@ export class AccountPage {
     this.saveBtn = page.getByRole("button", { name: /save/i });
 
     this.successMsg = page.getByText(/success|updated/i);
-    this.errorMsgs = page.getByText(/must contain at least/i);
   }
 
   async goto() {
@@ -45,11 +43,29 @@ export class AccountPage {
     };
   }
 
-  async expectErrorsVisible(count?: number) {
-    await expect(this.errorMsgs.first()).toBeVisible();
+  async getFieldError(field: "firstName" | "lastName") {
+    const input = {
+      firstName: this.firstNameInput,
+      lastName: this.lastNameInput,
+    }[field];
 
-    if (count !== undefined) {
-      await expect(this.errorMsgs).toHaveCount(count);
+    const errorId = await input.getAttribute("aria-describedby");
+
+    return this.page.locator(`#${errorId}`);
+  }
+
+  async expectFieldError(field: "firstName" | "lastName", message?: string) {
+    const error = await this.getFieldError(field);
+
+    await expect(error).toBeVisible();
+
+    if (message) {
+      await expect(error).toHaveText(new RegExp(message, "i"));
     }
+  }
+
+  async expectMultipleErrors(count: number) {
+    const errors = this.page.getByText(/must contain at least/i);
+    await expect(errors).toHaveCount(count);
   }
 }
