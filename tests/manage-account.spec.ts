@@ -66,7 +66,7 @@ test.describe("Manage Account Feature", () => {
         await expect(accountPage.firstNameInput).toHaveValue("");
 
         await accountPage.submit();
-        await accountPage.expectErrorsVisible();
+        await accountPage.expectFieldError("firstName");
       });
 
       await test.step("Step 5: Enter valid First Name, clear Last Name field, submit form, and verify validation error is shown for Last Name", async () => {
@@ -76,7 +76,7 @@ test.describe("Manage Account Feature", () => {
         await expect(accountPage.lastNameInput).toHaveValue("");
 
         await accountPage.submit();
-        await accountPage.expectErrorsVisible();
+        await accountPage.expectFieldError("lastName");
       });
 
       await test.step("Step 6: Clear both First Name and Last Name fields, submit form, and verify validation errors are shown for both fields", async () => {
@@ -84,7 +84,7 @@ test.describe("Manage Account Feature", () => {
         await accountPage.fillLastName("");
 
         await accountPage.submit();
-        await accountPage.expectErrorsVisible(2);
+        await accountPage.expectMultipleErrors(2);
       });
     }
   );
