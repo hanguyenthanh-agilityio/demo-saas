@@ -28,12 +28,20 @@ export class AccountPage {
     this.successMsg = page.getByText(/success|updated/i);
   }
 
-  async fillProfile(first: string, last: string) {
-    await this.firstNameInput.clear();
-    if (first) await this.firstNameInput.fill(first);
+  async gotoTicketPage() {
+    await this.page.goto("/ha-nguyen/tickets");
+  }
 
-    await this.lastNameInput.clear();
-    if (last) await this.lastNameInput.fill(last);
+  async fillProfile(data: { firstName?: string; lastName?: string }) {
+    const { firstName, lastName } = data;
+
+    if (firstName !== undefined) {
+      await this.firstNameInput.fill(firstName);
+    }
+
+    if (lastName !== undefined) {
+      await this.lastNameInput.fill(lastName);
+    }
   }
 
   async submit() {

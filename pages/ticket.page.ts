@@ -119,29 +119,21 @@ export class TicketPage {
     await this.waitForTableLoad();
   }
 
-  // GO To Search Page
-  async goToSearchPage() {
-    // Wait navigation if already on Search
+  async selectOrganizationOption(option: "search" | "sort") {
     const current = await this.page
       .locator('[data-testid="organization-name"]:visible')
       .first()
       .textContent();
 
-    if (current?.toLowerCase().includes("search")) {
-      // already on Search page, can return
-      return;
-    }
+    if (current?.toLowerCase().includes(option)) return;
 
-    // Open dropdown
-    const orgPicker = this.page.locator('[data-testid="organization-picker"]:visible').first();
-    await orgPicker.click();
+    await this.page.locator('[data-testid="organization-picker"]:visible').first().click();
 
-    // Wait dropdown menu to appear
-    const dropdownMenu = this.page.locator('div[role="menu"]:visible').first();
-    await dropdownMenu.waitFor({ state: "visible", timeout: 5000 });
+    const menuItem = this.page.getByRole("menuitem", {
+      name: new RegExp(option, "i"),
+    });
 
-    // Click Search option inside visible dropdown
-    await dropdownMenu.getByText("search", { exact: true }).click();
+    await menuItem.click();
 
     // Wait navigation to Search page
     await this.page.waitForURL("/search/tickets");
@@ -168,12 +160,11 @@ export class TicketPage {
 
     await this.page.waitForURL(/\/sort\/tickets/);
 
-    await this.waitForTicketListAPI();
     await this.waitForTicketsTableReload();
   }
 
   // Sort methods
-  async waitForTicketListAPI() {
+  async waitForGetTicketsSuccess() {
     await this.page.waitForResponse(
       (res) =>
         res.url().includes("tickets.getList") &&
@@ -214,7 +205,7 @@ export class TicketPage {
     await expect(this.titleHeader).toBeVisible({ timeout: 5000 });
     await expect(this.titleHeader).toBeEnabled({ timeout: 5000 });
 
-    await Promise.all([this.waitForTicketListAPI(), this.titleHeader.click()]);
+    await Promise.all([this.waitForGetTicketsSuccess(), this.titleHeader.click()]);
 
     await this.waitForTicketsTableReload();
   }
