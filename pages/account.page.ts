@@ -54,13 +54,15 @@ export class AccountPage {
     return this.page.locator(`#${errorId}`);
   }
 
-  async expectFieldError(field: "firstName" | "lastName", message?: string) {
+  async expectFieldError(field: "firstName" | "lastName", message?: string | RegExp) {
     const error = await this.getFieldError(field);
 
     await expect(error).toBeVisible();
 
     if (message) {
-      await expect(error).toHaveText(new RegExp(message, "i"));
+      await expect(error).toContainText(
+        message instanceof RegExp ? message : new RegExp(message, "i")
+      );
     }
   }
 
