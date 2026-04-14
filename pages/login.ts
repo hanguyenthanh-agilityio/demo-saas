@@ -49,7 +49,9 @@ export class LoginPage {
   }
   // Error handling
   getFieldError(field: "email" | "password") {
-    const input = field === "email" ? this.emailInput : this.passwordInput;
+    const input = this.page.getByRole("textbox", {
+      name: new RegExp(field, "i"),
+    });
 
     return input.locator("xpath=ancestor::*[contains(@class,'InputWrapper-root')]//p");
   }

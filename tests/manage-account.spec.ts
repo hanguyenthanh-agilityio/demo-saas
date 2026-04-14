@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test, expect } from "../fixtures/account-fixture";
-import { getUniqueName } from "../utils/data";
+import { generateName } from "../utils/data";
 
 test.describe("Manage Account Feature", () => {
   // =========================
@@ -21,6 +21,9 @@ test.describe("Manage Account Feature", () => {
 
       await test.step("Step 2: Move mouse away → Profile Menu hidden", async () => {
         await page.mouse.move(0, 0);
+
+        await expect(header.manageAccountItem).toBeHidden();
+        await expect(header.logoutItem).toBeHidden();
       });
     }
   );
@@ -33,8 +36,8 @@ test.describe("Manage Account Feature", () => {
     { tag: ["@account", "@profile"] },
     async ({ page, header, accountPage }) => {
       const validData = {
-        firstName: getUniqueName("Ha"),
-        lastName: getUniqueName("Nguyen"),
+        firstName: generateName("Ha"),
+        lastName: generateName("Nguyen"),
       };
 
       await test.step("Step 1: Navigate to Manage Account page and verify profile form is visible", async () => {
@@ -44,13 +47,13 @@ test.describe("Manage Account Feature", () => {
       });
 
       await test.step("Step 2: Verify First Name and Last Name fields are pre-filled with existing user data", async () => {
-        await expect(accountPage.firstNameInput).toHaveValue(/.+/);
-        await expect(accountPage.lastNameInput).toHaveValue(/.+/);
+        await expect(accountPage.firstNameInput).toHaveValue("Ha");
+        await expect(accountPage.lastNameInput).toHaveValue("Nguyen");
       });
 
       await test.step("Step 3: Enter valid First Name and Last Name, submit form, and verify success message is displayed", async () => {
-        await accountPage.fillFirstName(validData.firstName);
-        await accountPage.fillLastName(validData.lastName);
+        await accountPage.firstNameInput.fill(validData.firstName);
+        await accountPage.lastNameInput.fill(validData.lastName);
 
         await accountPage.submit();
 
@@ -66,7 +69,10 @@ test.describe("Manage Account Feature", () => {
         await expect(accountPage.firstNameInput).toHaveValue("");
 
         await accountPage.submit();
-        await accountPage.expectFieldError("firstName");
+        await accountPage.expectFieldError(
+          "firstName",
+          /String must contain at least 1 character\(s\)/i
+        );
       });
 
       await test.step("Step 5: Enter valid First Name, clear Last Name field, submit form, and verify validation error is shown for Last Name", async () => {
@@ -76,7 +82,10 @@ test.describe("Manage Account Feature", () => {
         await expect(accountPage.lastNameInput).toHaveValue("");
 
         await accountPage.submit();
-        await accountPage.expectFieldError("lastName");
+        await accountPage.expectFieldError(
+          "lastName",
+          /String must contain at least 1 character\(s\)/i
+        );
       });
 
       await test.step("Step 6: Clear both First Name and Last Name fields, submit form, and verify validation errors are shown for both fields", async () => {

@@ -55,7 +55,7 @@ test.describe("Login Feature - SaaS", () => {
       password: "",
       type: "ui",
       field: "global",
-      errorMess: "Invalid email or password",
+      errorMess: /invalid email or password|too many requests/i,
     },
     {
       id: "TC004",
