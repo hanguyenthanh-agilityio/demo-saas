@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: ticket-pagination.spec.ts >> Ticket Pagination Feature >> TC018 - Verify user can click Next, Previous, First, Last and page numbers to move between pages
-- Location: tests/ticket-pagination.spec.ts:28:7
+- Name: ticket-pagination.spec.ts >> Ticket Pagination Feature >> TC021 - Verify that system returns to page 1 when user changes number of rows per page
+- Location: tests/ticket-pagination.spec.ts:119:7
 
 # Error details
 
@@ -18,7 +18,21 @@ Test timeout of 60000ms exceeded.
 ```
 Error: locator.click: Test timeout of 60000ms exceeded.
 Call log:
-  - waiting for getByRole('button', { name: '2', exact: true })
+  - waiting for locator('[role="option"][value="25"]')
+    - locator resolved to <div id=":rr:" value="25" role="option" aria-selected="false" data-combobox-option="true" class="m_92253aa5 mantine-Select-option m_390b5f4">…</div>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is not visible
+    - retrying click action
+      - waiting 100ms
+    117 × waiting for element to be visible, enabled and stable
+        - element is not visible
+      - retrying click action
+        - waiting 500ms
 
 ```
 
@@ -52,7 +66,7 @@ Call log:
             - separator [ref=e36]
             - generic [ref=e37]:
               - generic [ref=e39]: HN
-              - paragraph [ref=e40]: Ha-714 Nguyen-682
+              - paragraph [ref=e40]: Ha-615 Nguyen-263
       - navigation [ref=e41]:
         - generic [ref=e42]:
           - generic [ref=e43]:
@@ -110,93 +124,113 @@ Call log:
                   - img [ref=e119]
               - generic [ref=e121]:
                 - generic [ref=e122] [cursor=pointer]:
-                  - paragraph [ref=e126]: Title 3
-                  - paragraph [ref=e129]: hanguyen011019@gmail.com
-                  - generic [ref=e133]: New
-                  - button "13 days ago" [ref=e136]:
-                    - paragraph [ref=e139]: 13 days ago
-                - generic [ref=e140] [cursor=pointer]:
-                  - paragraph [ref=e144]: Title 2
-                  - paragraph [ref=e147]: hanguyen011019@gmail.com
-                  - generic [ref=e151]: New
-                  - button "13 days ago" [ref=e154]:
-                    - paragraph [ref=e157]: 13 days ago
-                - generic [ref=e158] [cursor=pointer]:
-                  - generic [ref=e161]:
-                    - paragraph [ref=e162]: Doe
-                    - generic [ref=e163]:
-                      - img [ref=e164]
-                      - paragraph [ref=e167]: "1"
-                  - paragraph [ref=e170]: hanguyen011019@gmail.com
-                  - generic [ref=e174]: Closed
-                  - button "13 days ago" [ref=e177]:
-                    - paragraph [ref=e180]: 13 days ago
-            - group [ref=e181]:
-              - generic [ref=e182]:
-                - generic [ref=e184]:
-                  - button [ref=e185] [cursor=pointer]:
-                    - img [ref=e186]
-                  - button [ref=e188] [cursor=pointer]:
-                    - img [ref=e189]
-                  - button "1" [ref=e191] [cursor=pointer]
+                  - generic [ref=e125]:
+                    - paragraph [ref=e126]: Title 1776130752426
+                    - generic [ref=e127]:
+                      - img [ref=e128]
+                      - paragraph [ref=e131]: "3"
+                  - paragraph [ref=e134]: hanguyen011019@gmail.com
+                  - generic [ref=e138]: New
+                  - button "7 hours ago" [ref=e141]:
+                    - paragraph [ref=e144]: 7 hours ago
+                - generic [ref=e145] [cursor=pointer]:
+                  - paragraph [ref=e149]: Title 1776130749674
+                  - paragraph [ref=e152]: hanguyen011019@gmail.com
+                  - generic [ref=e156]: New
+                  - button "7 hours ago" [ref=e159]:
+                    - paragraph [ref=e162]: 7 hours ago
+                - generic [ref=e163] [cursor=pointer]:
+                  - generic [ref=e166]:
+                    - paragraph [ref=e167]: Title 1776130702151
+                    - generic [ref=e168]:
+                      - img [ref=e169]
+                      - paragraph [ref=e172]: "3"
+                  - paragraph [ref=e175]: hanguyen011019@gmail.com
+                  - generic [ref=e179]: New
+                  - button "7 hours ago" [ref=e182]:
+                    - paragraph [ref=e185]: 7 hours ago
+                - generic [ref=e186] [cursor=pointer]:
+                  - paragraph [ref=e190]: Title 1776130701545
+                  - paragraph [ref=e193]: hanguyen011019@gmail.com
+                  - generic [ref=e197]: New
+                  - button "7 hours ago" [ref=e200]:
+                    - paragraph [ref=e203]: 7 hours ago
+                - generic [ref=e204] [cursor=pointer]:
+                  - paragraph [ref=e208]: Title 1776130700651
+                  - paragraph [ref=e211]: hanguyen011019@gmail.com
+                  - generic [ref=e215]: New
+                  - button "7 hours ago" [ref=e218]:
+                    - paragraph [ref=e221]: 7 hours ago
+                - generic [ref=e222] [cursor=pointer]:
+                  - paragraph [ref=e226]: Title 1776130695033
+                  - paragraph [ref=e229]: hanguyen011019@gmail.com
+                  - generic [ref=e233]: New
+                  - button "7 hours ago" [ref=e236]:
+                    - paragraph [ref=e239]: 7 hours ago
+                - generic [ref=e240] [cursor=pointer]:
+                  - generic [ref=e243]:
+                    - paragraph [ref=e244]: Title 1776126424371
+                    - generic [ref=e245]:
+                      - img [ref=e246]
+                      - paragraph [ref=e249]: "1"
+                  - paragraph [ref=e252]: hanguyen011019@gmail.com
+                  - generic [ref=e256]: New
+                  - button "8 hours ago" [ref=e259]:
+                    - paragraph [ref=e262]: 8 hours ago
+                - generic [ref=e263] [cursor=pointer]:
+                  - paragraph [ref=e267]: Title 1776126420414
+                  - paragraph [ref=e270]: hanguyen011019@gmail.com
+                  - generic [ref=e274]: New
+                  - button "8 hours ago" [ref=e277]:
+                    - paragraph [ref=e280]: 8 hours ago
+                - generic [ref=e281] [cursor=pointer]:
+                  - paragraph [ref=e285]: Title 1776126418772
+                  - paragraph [ref=e288]: hanguyen011019@gmail.com
+                  - generic [ref=e292]: New
+                  - button "8 hours ago" [ref=e295]:
+                    - paragraph [ref=e298]: 8 hours ago
+                - generic [ref=e299] [cursor=pointer]:
+                  - paragraph [ref=e303]: Title 1776126415274
+                  - paragraph [ref=e306]: hanguyen011019@gmail.com
+                  - generic [ref=e310]: New
+                  - button "8 hours ago" [ref=e313]:
+                    - paragraph [ref=e316]: 8 hours ago
+            - group [ref=e317]:
+              - generic [ref=e318]:
+                - generic [ref=e320]:
+                  - button [ref=e321] [cursor=pointer]:
+                    - img [ref=e322]
+                  - button [ref=e324] [cursor=pointer]:
+                    - img [ref=e325]
+                  - button "1" [ref=e327] [cursor=pointer]
+                  - button "2" [ref=e328] [cursor=pointer]
+                  - button "3" [ref=e329] [cursor=pointer]
+                  - button "4" [ref=e330] [cursor=pointer]
+                  - button "5" [ref=e331] [cursor=pointer]
                   - generic:
                     - img
-                  - button "18" [ref=e192] [cursor=pointer]
-                  - button "19" [ref=e193] [cursor=pointer]
-                  - button "20" [ref=e194] [cursor=pointer]
-                  - button "21" [ref=e195] [cursor=pointer]
-                  - button "22" [ref=e196] [cursor=pointer]
-                  - button [disabled] [ref=e197]:
-                    - img [ref=e198]
-                  - button [disabled] [ref=e200]:
-                    - img [ref=e201]
-                - separator [ref=e203]
-                - generic [ref=e204]:
-                  - generic [ref=e205]:
-                    - generic [ref=e206]: Go to page
-                    - spinbutton "Go to page" [ref=e208]
-                  - generic [ref=e209]:
-                    - generic [ref=e210]: Rows per page
-                    - generic [ref=e211]:
-                      - textbox "Rows per page" [ref=e212] [cursor=pointer]: "10"
+                  - button "23" [ref=e332] [cursor=pointer]
+                  - button [ref=e333] [cursor=pointer]:
+                    - img [ref=e334]
+                  - button [ref=e336] [cursor=pointer]:
+                    - img [ref=e337]
+                - separator [ref=e339]
+                - generic [ref=e340]:
+                  - generic [ref=e341]:
+                    - generic [ref=e342]: Go to page
+                    - spinbutton "Go to page" [ref=e344]
+                  - generic [ref=e345]:
+                    - generic [ref=e346]: Rows per page
+                    - generic [ref=e347]:
+                      - textbox "Rows per page" [ref=e348] [cursor=pointer]: "10"
                       - generic:
                         - img
-  - alert [ref=e213]: Demo SaaS
+  - alert [ref=e349]: Demo SaaS
 ```
 
 # Test source
 
 ```ts
-  275 | 
-  276 |     await this.page.waitForSelector('[role="dialog"]', {
-  277 |       state: "visible",
-  278 |       timeout: 10000,
-  279 |     });
-  280 | 
-  281 |     await expect(this.ticketDetailPopup).toBeVisible();
-  282 |   }
-  283 | 
-  284 |   async changeStatus(status: TicketStatus) {
-  285 |     const dropdownBtn = this.popupStatusSelect;
-  286 | 
-  287 |     await expect(dropdownBtn).toBeVisible();
-  288 |     await dropdownBtn.click();
-  289 | 
-  290 |     const option = this.page.getByRole("option", {
-  291 |       name: new RegExp(status, "i"),
-  292 |     });
-  293 | 
-  294 |     await expect(option).toBeVisible();
-  295 |     await option.click();
-  296 |   }
-  297 | 
-  298 |   async getComments() {
-  299 |     const items = this.ticketDetailPopup.locator("textarea[readonly]");
-  300 |     const count = await items.count();
-  301 | 
-  302 |     const values: string[] = [];
-  303 | 
-  304 |     for (let i = 0; i < count; i++) {
   305 |       const val = await items.nth(i).inputValue();
   306 |       if (val.trim()) values.push(val);
   307 |     }
@@ -267,8 +301,7 @@ Call log:
   372 |   }
   373 | 
   374 |   async goToPage(page: number) {
-> 375 |     await this.getPageBtn(page).click();
-      |                                 ^ Error: locator.click: Test timeout of 60000ms exceeded.
+  375 |     await this.getPageBtn(page).click();
   376 |   }
   377 | 
   378 |   async clickNext() {
@@ -298,7 +331,8 @@ Call log:
   402 |   async changeRowsPerPage(size: RowsPerPage) {
   403 |     await this.rowsPerPageSelect.click();
   404 | 
-  405 |     await this.page.locator(`[role="option"][value="${size}"]`).click();
+> 405 |     await this.page.locator(`[role="option"][value="${size}"]`).click();
+      |                                                                 ^ Error: locator.click: Test timeout of 60000ms exceeded.
   406 | 
   407 |     await this.waitForTicketsTableReload();
   408 |   }
