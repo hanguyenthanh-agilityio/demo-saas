@@ -8,60 +8,64 @@ export class AccountPage {
   readonly saveBtn: Locator;
 
   readonly successMsg: Locator;
-  readonly errorMsgs: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
-    this.firstNameInput = page.getByRole("textbox", {
-      name: /first name/i,
-    });
-
-    this.lastNameInput = page.getByRole("textbox", {
-      name: /last name/i,
-    });
+    this.firstNameInput = page.getByRole("textbox", { name: /first name/i });
+    this.lastNameInput = page.getByRole("textbox", { name: /last name/i });
 
     this.saveBtn = page.getByRole("button", { name: /save/i });
-
-    this.errorMsgs = page.getByText(/must contain at least/i);
 
     this.successMsg = page.getByText(/success|updated/i);
   }
 
-  async gotoTicketPage() {
+  async goto() {
     await this.page.goto("/ha-nguyen/tickets");
   }
 
-  async fillProfile(first?: string, last?: string) {
-    if (first !== undefined) {
-      await this.firstNameInput.fill(first);
-    }
-
-    if (last !== undefined) {
-      await this.lastNameInput.fill(last);
-    }
+  async fillFirstName(value: string) {
+    await this.firstNameInput.fill(value);
   }
 
-  async clearInput(input: Locator) {
-    await input.fill("");
+  async fillLastName(value: string) {
+    await this.lastNameInput.fill(value);
   }
 
   async submit() {
     await this.saveBtn.click();
   }
 
-  async getProfileValues() {
+  async getValues() {
     return {
       firstName: await this.firstNameInput.inputValue(),
       lastName: await this.lastNameInput.inputValue(),
     };
   }
 
-  async expectValidationError(count?: number) {
-    await expect(this.errorMsgs.first()).toBeVisible();
+  async getFieldError(field: "firstName" | "lastName") {
+    const input = {
+      firstName: this.firstNameInput,
+      lastName: this.lastNameInput,
+    }[field];
 
-    if (count !== undefined) {
-      await expect(this.errorMsgs).toHaveCount(count);
+    const errorId = await input.getAttribute("aria-describedby");
+
+    return this.page.locator(`#${errorId}`);
+  }
+
+  async expectFieldError(field: "firstName" | "lastName", message?: string) {
+    const error = await this.getFieldError(field);
+
+    await expect(error).toBeVisible();
+
+    if (message) {
+      await expect(error).toHaveText(new RegExp(message, "i"));
     }
+  }
+
+  async expectMultipleErrors(count: number) {
+    const errors = this.page.getByText(/must contain at least/i);
+    await expect(errors).toHaveCount(count);
   }
 }

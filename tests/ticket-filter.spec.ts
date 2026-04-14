@@ -1,37 +1,42 @@
 import { test, expect } from "../fixtures/ticket-fixture";
 
 test.describe("Ticket Filter by Status", () => {
-  const statuses: Array<"New" | "In Progress" | "Resolved" | "Closed" | "Any"> = [
-    "New",
-    "In Progress",
-    "Resolved",
-    "Closed",
-    "Any",
-  ];
+  const statuses = ["New", "In Progress", "Resolved", "Closed", "Any"] as const;
 
-  test("Verify user can filter tickets by status", async ({ ticketPage }) => {
-    await ticketPage.goto();
-
-    for (const status of statuses) {
-      await test.step(`Filter by status = ${status}`, async () => {
-        await ticketPage.filterByStatus(status);
-        await ticketPage.waitForTicketsTableReload();
-
-        // Verify filter UI is set correctly
-        const selected = (await ticketPage.statusSelect.inputValue?.()) || status;
-        expect(selected.toLowerCase()).toBe(status.toLowerCase());
-
-        const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
-
-        if (status !== "Any") {
-          const allowedStatuses = ["New", "In Progress", "Resolved", "Closed"];
-          visibleStatuses.forEach((s) => {
-            expect(allowedStatuses.map((a) => a.toLowerCase())).toContain(s.toLowerCase());
-          });
-        } else {
-          expect(visibleStatuses.length >= 0).toBeTruthy();
-        }
+  test(
+    "Verify user can filter tickets by status correctly",
+    { tag: ["@ticket", "@filter", "@ui"] },
+    async ({ ticketPage }) => {
+      await test.step("Navigate to ticket page", async () => {
+        await ticketPage.goto();
       });
+
+      for (const status of statuses) {
+        await test.step(`Filter tickets by status: ${status}`, async () => {
+          await ticketPage.filterByStatus(status);
+          await ticketPage.waitForTicketsTableReload();
+        });
+
+        await test.step("Verify filter UI state is correct", async () => {
+          const selected = await ticketPage.statusSelect.inputValue();
+          expect(selected.toLowerCase()).toBe(status.toLowerCase());
+        });
+
+        await test.step("Verify ticket statuses in table", async () => {
+          const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
+
+          if (status === "Any") {
+            expect(visibleStatuses.length).toBeGreaterThanOrEqual(0);
+            return;
+          }
+
+          const allowed = ["new", "in progress", "resolved", "closed"];
+
+          for (const s of visibleStatuses) {
+            expect(allowed).toContain(s.toLowerCase());
+          }
+        });
+      }
     }
-  });
+  );
 });

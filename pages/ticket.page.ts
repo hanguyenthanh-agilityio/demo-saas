@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
-import { RowsPerPage } from "../types/ticket";
+import { RowsPerPage, TicketStatus } from "../types/ticket";
 
 export class TicketPage {
   readonly page: Page;
@@ -184,12 +184,19 @@ export class TicketPage {
   }
 
   async sortByTitle() {
-    await expect(this.titleHeader).toBeVisible({ timeout: 5000 });
-    await expect(this.titleHeader).toBeEnabled({ timeout: 5000 });
+    await expect(this.titleHeader).toBeVisible();
+    await expect(this.titleHeader).toBeEnabled();
 
     await Promise.all([this.waitForGetTicketsSuccess(), this.titleHeader.click()]);
 
     await this.waitForTicketsTableReload();
+
+    await expect
+      .poll(async () => {
+        const titles = await this.getTicketTitles();
+        return titles.join("|");
+      })
+      .toBeTruthy();
   }
 
   async getTitlesAndUrl() {
@@ -217,9 +224,15 @@ export class TicketPage {
     ]);
   }
 
-  async filterByStatus(status: string) {
+  async filterByStatus(status: TicketStatus) {
     await this.statusSelect.click();
-    await this.page.getByRole("option", { name: status }).click();
+
+    const option = this.page.getByRole("option", {
+      name: new RegExp(status, "i"),
+    });
+
+    await expect(option).toBeVisible();
+    await option.click();
   }
 
   getVisibleTickets() {
@@ -228,6 +241,7 @@ export class TicketPage {
 
   async getVisibleTicketStatuses() {
     const statuses = this.page.locator('div[data-testid="ticket-status"] .mantine-Badge-label');
+    await expect(statuses.first()).toBeVisible();
     return statuses.allTextContents();
   }
 
@@ -267,29 +281,36 @@ export class TicketPage {
     await expect(this.ticketDetailPopup).toBeVisible();
   }
 
-  async changeStatus(status: string) {
+  async changeStatus(status: TicketStatus) {
     const dropdownBtn = this.popupStatusSelect;
 
     await expect(dropdownBtn).toBeVisible();
-    await expect(dropdownBtn).toBeEnabled();
-
     await dropdownBtn.click();
 
-    const listbox = this.page.getByRole("listbox");
-
-    await expect(listbox).toBeVisible({ timeout: 5000 });
-
-    const option = listbox.getByRole("option").filter({
-      hasText: new RegExp(status, "i"),
+    const option = this.page.getByRole("option", {
+      name: new RegExp(status, "i"),
     });
 
-    await expect(option.first()).toBeVisible();
+    await expect(option).toBeVisible();
+    await option.click();
+  }
 
-    await option.first().click();
+  async getComments() {
+    const items = this.ticketDetailPopup.locator("textarea[readonly]");
+    const count = await items.count();
+
+    const values: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const val = await items.nth(i).inputValue();
+      if (val.trim()) values.push(val);
+    }
+
+    return values;
   }
 
   getCommentItem(text: string) {
-    return this.ticketDetailPopup.locator("textarea[readonly]").filter({
+    return this.ticketDetailPopup.locator("textarea[readonly]", {
       hasText: text,
     });
   }
@@ -304,12 +325,6 @@ export class TicketPage {
   async closePopupByIcon() {
     await expect(this.closePopupBtn).toBeVisible();
     await this.closePopupBtn.click();
-
-    await expect(this.ticketDetailPopup).toBeHidden();
-  }
-
-  async closePopupByOutsideClick() {
-    await this.page.mouse.click(10, 10);
 
     await expect(this.ticketDetailPopup).toBeHidden();
   }
@@ -402,5 +417,10 @@ export class TicketPage {
     }
 
     await this.page.keyboard.press("Enter");
+  }
+
+  async expectFieldError(field: "name" | "title" | "description") {
+    const error = this.getErrorByField(field);
+    await expect(error).toBeVisible();
   }
 }
