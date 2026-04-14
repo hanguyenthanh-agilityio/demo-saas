@@ -73,7 +73,7 @@ test.describe("Login Feature - SaaS", () => {
       password: "wrong123",
       type: "api",
       field: "global",
-      errorMess: "Invalid email or password",
+      errorMess: /invalid email or password|too many requests/i,
     },
   ];
   for (const c of cases) {

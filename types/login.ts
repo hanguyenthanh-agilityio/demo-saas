@@ -19,5 +19,5 @@ export type LoginCase = {
   password: string;
   type: "ui" | "api";
   field?: LoginErrorField;
-  errorMess?: string;
+  errorMess?: string | RegExp;
 };

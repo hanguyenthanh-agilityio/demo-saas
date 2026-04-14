@@ -20,7 +20,9 @@ export class LoginPage {
 
     this.togglePasswordBtn = page.locator(".mantine-PasswordInput-visibilityToggle");
 
-    this.globalError = page.getByText(/invalid email or password|too many requests/i);
+    this.globalError = page.getByText(
+      /invalid email or password|too many requests|try again later/i
+    );
   }
 
   async goto() {

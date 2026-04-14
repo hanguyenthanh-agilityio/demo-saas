@@ -184,12 +184,19 @@ export class TicketPage {
   }
 
   async sortByTitle() {
-    await expect(this.titleHeader).toBeVisible({ timeout: 5000 });
-    await expect(this.titleHeader).toBeEnabled({ timeout: 5000 });
+    await expect(this.titleHeader).toBeVisible();
+    await expect(this.titleHeader).toBeEnabled();
 
     await Promise.all([this.waitForGetTicketsSuccess(), this.titleHeader.click()]);
 
     await this.waitForTicketsTableReload();
+
+    await expect
+      .poll(async () => {
+        const titles = await this.getTicketTitles();
+        return titles.join("|");
+      })
+      .toBeTruthy();
   }
 
   async getTitlesAndUrl() {
