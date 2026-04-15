@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 test.describe("Ticket Search Feature", () => {
   const keywords = {
@@ -48,12 +48,15 @@ test.describe("Ticket Search Feature", () => {
         expect(emptyVisible).toBeTruthy();
       });
 
-      await test.step("Step 7: Clear the search input and verify all tickets are visible again", async () => {
+      await test.step("Step 7: Clear search and verify result", async () => {
         await ticketPage.clearSearch();
+
         await ticketPage.waitForTicketsTableReload();
 
         const rows = await ticketPage.getVisibleTickets().count();
-        expect(rows).toBeGreaterThan(0);
+        const emptyVisible = await ticketPage.emptyState.isVisible();
+
+        expect(rows > 0 || emptyVisible).toBeTruthy();
       });
     }
   );

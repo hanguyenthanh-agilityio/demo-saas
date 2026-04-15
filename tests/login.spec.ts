@@ -1,13 +1,16 @@
 // Fixtures
-import { test, expect } from "../fixtures/login-fixture";
+import { test, expect } from "../fixtures/login";
 
 // Pages
 import { DashboardPage } from "../pages/dashboard";
+
+// Types
 import { LoginCase } from "../types/login";
 
 // Env
 import { ENV } from "../utils/env";
 
+//
 test.describe("Login Feature - SaaS", () => {
   // ======================
   // TC001 - SUCCESS
@@ -125,21 +128,19 @@ test.describe("Login Feature - SaaS", () => {
     }
   );
 
-  test(
-    "TC008 - Verify user can toggle password visibility",
-    { tag: ["@login", "@ui"] },
-    async ({ loginPage }) => {
-      await test.step("Fill password input", async () => {
-        await loginPage.passwordInput.fill("123456");
-      });
+  test("TC008 - Verify user can toggle password visibility", async ({ loginPage }) => {
+    await test.step("Fill password input", async () => {
+      await loginPage.passwordInput.fill("123456");
+    });
 
-      await test.step("Toggle to show password", async () => {
-        await loginPage.setPasswordVisibility(true);
-      });
+    await test.step("Toggle to show password", async () => {
+      await loginPage.togglePassword();
+      await expect(loginPage.passwordInput).toHaveAttribute("type", "text");
+    });
 
-      await test.step("Toggle to hide password", async () => {
-        await loginPage.setPasswordVisibility(false);
-      });
-    }
-  );
+    await test.step("Toggle to hide password", async () => {
+      await loginPage.togglePassword();
+      await expect(loginPage.passwordInput).toHaveAttribute("type", "password");
+    });
+  });
 });

@@ -6,12 +6,22 @@ setup("Authenticate and save session", async ({ page }) => {
   const login = new LoginPage(page);
 
   await login.goto();
-  await login.login(ENV.EMAIL, ENV.PASSWORD);
 
-  await expect(page).toHaveURL(/tickets/);
+  // Wait API + submit login
+  const res = await login.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
 
+  // Verify login success (backend)
+  expect(res.status()).toBe(200);
+
+  // Wait redirect (frontend)
+  await expect(page).toHaveURL(/tickets/, { timeout: 10000 });
+
+  // Verify UI loaded
   const ticketsTab = page.getByRole("tab", { name: "Tickets" });
   await expect(ticketsTab).toBeVisible({ timeout: 10000 });
 
-  await page.context().storageState({ path: "playwright/.auth/user.json" });
+  // Save session
+  await page.context().storageState({
+    path: "playwright/.auth/user.json",
+  });
 });

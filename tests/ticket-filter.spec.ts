@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 test.describe("Ticket Filter by Status", () => {
   const statuses = ["New", "In Progress", "Resolved", "Closed", "Any"] as const;

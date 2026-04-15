@@ -74,14 +74,7 @@ export class LoginPage {
     }
   }
 
-  async setPasswordVisibility(show: boolean) {
-    const type = await this.passwordInput.getAttribute("type");
-    const isVisible = type === "text";
-
-    if (show !== isVisible) {
-      await this.togglePasswordBtn.click();
-    }
-
-    await expect(this.passwordInput).toHaveAttribute("type", show ? "text" : "password");
+  async togglePassword() {
+    await this.togglePasswordBtn.click();
   }
 }
