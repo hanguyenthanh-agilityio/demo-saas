@@ -52,6 +52,7 @@ test.describe("Ticket Feature", () => {
 
       await test.step("Step 5: Verify success message UI", async () => {
         await expect(ticketPage.successMsg).toBeVisible();
+        // await expect(ticketPage.successMsg).toHaveText("Something wrong");
       });
     }
   );

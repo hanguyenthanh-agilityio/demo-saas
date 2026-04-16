@@ -65,5 +65,35 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
+
+    {
+      name: "firefox",
+      testIgnore: [
+        /.*login\.spec\.ts/,
+        /.*manage-account\.spec\.ts/,
+        /.*ticket\.spec\.ts/,
+        /.*ticket-update\.spec\.ts/,
+      ],
+      use: {
+        ...devices["Desktop Firefox"],
+        storageState: "playwright/.auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
+
+    {
+      name: "webkit",
+      testIgnore: [
+        /.*login\.spec\.ts/,
+        /.*manage-account\.spec\.ts/,
+        /.*ticket\.spec\.ts/,
+        /.*ticket-update\.spec\.ts/,
+      ],
+      use: {
+        ...devices["Desktop WebKit"],
+        storageState: "playwright/.auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
   ],
 });

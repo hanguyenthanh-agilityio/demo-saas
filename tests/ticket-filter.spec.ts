@@ -23,18 +23,20 @@ test.describe("Ticket Filter by Status", () => {
         });
 
         await test.step("Verify ticket statuses in table", async () => {
+          await ticketPage.filterByStatus(status);
+        });
+
+        await test.step("Verify ticket statuses", async () => {
           const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
 
           if (status === "Any") {
-            expect(visibleStatuses.length).toBeGreaterThanOrEqual(0);
+            expect(visibleStatuses.length).toBeGreaterThan(0);
             return;
           }
 
-          const allowed = ["new", "in progress", "resolved", "closed"];
+          const invalid = visibleStatuses.filter((s) => s.toLowerCase() !== status.toLowerCase());
 
-          for (const s of visibleStatuses) {
-            expect(allowed).toContain(s.toLowerCase());
-          }
+          expect(invalid).toEqual([]);
         });
       }
     }
