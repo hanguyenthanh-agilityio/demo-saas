@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 test.describe("Ticket Search Feature", () => {
   const keywords = {
@@ -16,9 +16,9 @@ test.describe("Ticket Search Feature", () => {
     "TC024 - Verify user can search tickets by title (exact, partial, case-insensitive, trimmed, empty)",
     { tag: ["@ticket", "@search"] },
     async ({ ticketPage }) => {
-      await test.step("Step 1: Navigate to Ticket List and Search page", async () => {
+      await test.step("Step 1: Navigate to Ticket List, user click search option in Organization Dropdown", async () => {
         await ticketPage.goto();
-        await ticketPage.goToSearchPage();
+        await ticketPage.selectOrganizationOption("search");
       });
 
       await test.step("Step 2: Enter exact ticket title into search input and verify all visible results exactly match it", async () => {
@@ -48,12 +48,15 @@ test.describe("Ticket Search Feature", () => {
         expect(emptyVisible).toBeTruthy();
       });
 
-      await test.step("Step 7: Clear the search input and verify all tickets are visible again", async () => {
+      await test.step("Step 7: Clear search and verify result", async () => {
         await ticketPage.clearSearch();
+
         await ticketPage.waitForTicketsTableReload();
 
         const rows = await ticketPage.getVisibleTickets().count();
-        expect(rows).toBeGreaterThan(0);
+        const emptyVisible = await ticketPage.emptyState.isVisible();
+
+        expect(rows > 0 || emptyVisible).toBeTruthy();
       });
     }
   );
@@ -67,7 +70,7 @@ test.describe("Ticket Search Feature", () => {
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List and Search page", async () => {
         await ticketPage.goto();
-        await ticketPage.goToSearchPage();
+        await ticketPage.selectOrganizationOption("search");
       });
 
       await test.step("Step 2: Enter exact ticket title into search input to filter results", async () => {

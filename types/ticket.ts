@@ -16,3 +16,5 @@ type TRPCResponse<T> = {
 export type CreateTicketTRPC = TRPCResponse<Ticket>[];
 
 export type RowsPerPage = "10" | "25";
+
+export type TicketStatus = "New" | "In Progress" | "Resolved" | "Closed" | "Any";

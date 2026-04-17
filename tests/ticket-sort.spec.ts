@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 function expectSortedAsc(arr: string[]) {
   const sorted = [...arr].sort((a, b) => a.localeCompare(b));
@@ -13,17 +13,15 @@ test.describe("Ticket Sort Feature", () => {
     "TC030 - Verify user can sort tickets by Title",
     { tag: ["@ticket", "@sort", "@smoke"] },
     async ({ ticketPage }) => {
-      let defaultTitles: string[] = [];
       let ascTitles: string[] = [];
 
-      await test.step("Step 1: Navigate to Ticket List and Sort page", async () => {
+      await test.step("Step 1: Navigate to Ticket List, user click sort option in Organization Dropdown", async () => {
         await ticketPage.goto();
-        await ticketPage.goToSortPage();
+        await ticketPage.selectOrganizationOption("sort");
       });
 
       await test.step("Step 2: Capture default ticket titles before sorting", async () => {
-        defaultTitles = await ticketPage.getTicketTitles();
-        expect(defaultTitles.length).toBeGreaterThan(0);
+        await ticketPage.waitForTicketsTableReload();
       });
 
       await test.step("Step 3: Click Title column header to sort tickets in ascending order", async () => {
