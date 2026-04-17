@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
-import { ENV } from "./utils/env";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const isCI = !!process.env.CI;
 
@@ -27,7 +29,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { outputFolder: "playwright-report", open: "never" }]],
 
   use: {
-    baseURL: process.env.BASE_URL || ENV.BASE_URL,
+    baseURL: process.env.BASE_URL,
 
     headless: isCI,
 
@@ -45,7 +47,12 @@ export default defineConfig({
   projects: [
     {
       name: "setup",
-      testMatch: /.*\.setup\.ts/,
+      testMatch: /.*auth\.setup\.ts/,
+    },
+
+    {
+      name: "setup-logout",
+      testMatch: /.*logout\.setup\.ts/,
     },
 
     {
@@ -57,8 +64,18 @@ export default defineConfig({
     },
 
     {
+      name: "logout",
+      testMatch: /.*logout\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "playwright/.auth/logout-user.json",
+      },
+      dependencies: ["setup-logout"],
+    },
+
+    {
       name: "chromium",
-      testIgnore: [/.*login\.spec\.ts/],
+      testIgnore: [/.*login\.spec\.ts/, /.*logout\.spec\.ts/],
       use: {
         ...devices["Desktop Chrome"],
         storageState: "playwright/.auth/user.json",
@@ -70,6 +87,7 @@ export default defineConfig({
       name: "firefox",
       testIgnore: [
         /.*login\.spec\.ts/,
+        /.*logout\.spec\.ts/,
         /.*manage-account\.spec\.ts/,
         /.*ticket\.spec\.ts/,
         /.*ticket-update\.spec\.ts/,
@@ -85,6 +103,7 @@ export default defineConfig({
       name: "webkit",
       testIgnore: [
         /.*login\.spec\.ts/,
+        /.*logout\.spec\.ts/,
         /.*manage-account\.spec\.ts/,
         /.*ticket\.spec\.ts/,
         /.*ticket-update\.spec\.ts/,

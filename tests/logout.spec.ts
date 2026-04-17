@@ -1,9 +1,9 @@
-import { expect, test } from "../fixtures/logout-fixture";
-import { HeaderPage } from "../pages/header.page";
+import { test, expect } from "@playwright/test";
+import { HeaderPage } from "../pages/header";
 import { ENV } from "../utils/env";
 
 test.describe("Sign out Feature", () => {
-  test.skip("TC036 - Verify user can log out successfully and is redirected to Login page", async ({
+  test("TC036 - Verify user can log out successfully and is redirected to Login page", async ({
     page,
   }) => {
     const header = new HeaderPage(page);
@@ -13,6 +13,12 @@ test.describe("Sign out Feature", () => {
     });
 
     await test.step("Step 2: Click avatar and logout", async () => {
+      await page.waitForLoadState("networkidle");
+
+      const avatar = page.getByTestId("user-settings");
+
+      await expect(avatar).toBeVisible({ timeout: 15000 });
+
       await header.logout();
     });
 
