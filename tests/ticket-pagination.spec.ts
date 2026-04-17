@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 import { RowsPerPage } from "../types/ticket";
 
 test.describe("Ticket Pagination Feature", () => {

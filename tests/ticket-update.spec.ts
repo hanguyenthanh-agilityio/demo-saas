@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 test.describe("Update Ticket Feature", () => {
   const title = `Title ${Date.now()}`;

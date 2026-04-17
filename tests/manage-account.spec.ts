@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { test, expect } from "../fixtures/account-fixture";
+import { test, expect } from "../fixtures/account";
 import { generateName } from "../utils/data";
 
 test.describe("Manage Account Feature", () => {

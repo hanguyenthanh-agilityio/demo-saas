@@ -1,6 +1,6 @@
 import { test as base } from "@playwright/test";
-import { HeaderPage } from "../pages/header.page";
-import { AccountPage } from "../pages/account.page";
+import { HeaderPage } from "../pages/header";
+import { AccountPage } from "../pages/account";
 
 type Fixtures = {
   header: HeaderPage;

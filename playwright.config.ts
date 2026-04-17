@@ -49,28 +49,48 @@ export default defineConfig({
     },
 
     {
-      name: "api",
-      testMatch: /.*api\.spec\.ts/,
+      name: "auth-chromium",
+      testMatch: /.*login\.spec\.ts/,
       use: {
-        browserName: "chromium",
+        ...devices["Desktop Chrome"],
       },
     },
 
     {
-      name: "auth",
-      testMatch: /.*login\.spec\.ts/,
+      name: "chromium",
+      testIgnore: [/.*login\.spec\.ts/],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: undefined,
+        storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],
     },
 
     {
-      name: "chromium",
-      testIgnore: [/.*login\.spec\.ts/, /.*api\.spec\.ts/],
+      name: "firefox",
+      testIgnore: [
+        /.*login\.spec\.ts/,
+        /.*manage-account\.spec\.ts/,
+        /.*ticket\.spec\.ts/,
+        /.*ticket-update\.spec\.ts/,
+      ],
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices["Desktop Firefox"],
+        storageState: "playwright/.auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
+
+    {
+      name: "webkit",
+      testIgnore: [
+        /.*login\.spec\.ts/,
+        /.*manage-account\.spec\.ts/,
+        /.*ticket\.spec\.ts/,
+        /.*ticket-update\.spec\.ts/,
+      ],
+      use: {
+        ...devices["Desktop WebKit"],
         storageState: "playwright/.auth/user.json",
       },
       dependencies: ["setup"],

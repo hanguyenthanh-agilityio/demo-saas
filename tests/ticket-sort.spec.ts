@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 
 function expectSortedAsc(arr: string[]) {
   const sorted = [...arr].sort((a, b) => a.localeCompare(b));

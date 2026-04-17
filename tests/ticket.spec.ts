@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/ticket-fixture";
+import { test, expect } from "../fixtures/ticket";
 import { CreateTicketTRPC } from "../types/ticket";
 
 test.describe("Ticket Feature", () => {
@@ -52,6 +52,7 @@ test.describe("Ticket Feature", () => {
 
       await test.step("Step 5: Verify success message UI", async () => {
         await expect(ticketPage.successMsg).toBeVisible();
+        // await expect(ticketPage.successMsg).toHaveText("Something wrong");
       });
     }
   );
