@@ -47,12 +47,12 @@ export default defineConfig({
   projects: [
     {
       name: "setup",
-      testMatch: /.*auth\.setup\.ts/,
+      testMatch: /.*auth\.ts/,
     },
 
     {
       name: "setup-logout",
-      testMatch: /.*logout\.setup\.ts/,
+      testMatch: /.*logout\.ts/,
     },
 
     {
