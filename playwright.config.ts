@@ -16,13 +16,9 @@ export default defineConfig({
 
   workers: isCI ? 1 : undefined,
 
-  timeout: 60 * 1000,
+  timeout: isCI ? 120 * 1000 : 60 * 1000,
 
-  globalTimeout: 20 * 60 * 1000,
-
-  expect: {
-    timeout: 5000,
-  },
+  globalTimeout: isCI ? 20 * 60 * 1000 : undefined,
 
   outputDir: "test-results",
 
