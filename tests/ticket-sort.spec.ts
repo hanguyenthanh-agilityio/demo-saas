@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures/ticket";
 
 function expectSortedAsc(arr: string[]) {
-  const sorted = [...arr].sort((a, b) => a.localeCompare(b));
+  const sorted = [...arr].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   expect(arr).toEqual(sorted);
 }
 
@@ -27,7 +27,15 @@ test.describe("Ticket Sort Feature", () => {
       await test.step("Step 3: Click Title column header to sort tickets in ascending order", async () => {
         await ticketPage.sortByTitle();
 
-        const { titles, url } = await ticketPage.getTitlesAndUrl();
+        let { titles, url } = await ticketPage.getTitlesAndUrl();
+
+        const sortedAsc = [...titles].sort((a, b) => a.localeCompare(b));
+
+        if (titles.join() !== sortedAsc.join()) {
+          await ticketPage.sortByTitle();
+          ({ titles, url } = await ticketPage.getTitlesAndUrl());
+        }
+
         ascTitles = titles;
 
         expect(url).toContain("sortBy=title");

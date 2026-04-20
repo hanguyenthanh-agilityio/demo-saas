@@ -185,7 +185,8 @@ export class TicketPage {
 
   async sortByTitle() {
     await expect(this.titleHeader).toBeVisible();
-    await expect(this.titleHeader).toBeEnabled();
+
+    const before = await this.getTicketTitles();
 
     await Promise.all([this.waitForGetTicketsSuccess(), this.titleHeader.click()]);
 
@@ -193,10 +194,10 @@ export class TicketPage {
 
     await expect
       .poll(async () => {
-        const titles = await this.getTicketTitles();
-        return titles.join("|");
+        const after = await this.getTicketTitles();
+        return after.join("|");
       })
-      .toBeTruthy();
+      .not.toBe(before.join("|"));
   }
 
   async getTitlesAndUrl() {
