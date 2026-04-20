@@ -38,7 +38,10 @@ export class HeaderPage {
   }
 
   async logout() {
+    await expect(this.avatar).toBeVisible({ timeout: 10000 });
+
     await this.avatar.click();
+
     await expect(this.menu).toBeVisible();
 
     await this.logoutItem.click();

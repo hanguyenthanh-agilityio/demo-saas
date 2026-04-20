@@ -20,6 +20,8 @@ jobs:
       BASE_URL: ${{ secrets.BASE_URL }}
       EMAIL: ${{ secrets.EMAIL }}
       PASSWORD: ${{ secrets.PASSWORD }}
+      EMAIL_LOGOUT: ${{ secrets.EMAIL_LOGOUT }}
+      PASSWORD_LOGOUT: ${{ secrets.PASSWORD_LOGOUT }}
 
     steps:
       # 1. Checkout
@@ -50,6 +52,8 @@ jobs:
           echo "BASE_URL=$BASE_URL"
           echo "EMAIL=$EMAIL"
           echo "PASSWORD=***hidden***"
+          echo "EMAIL_LOGOUT=$EMAIL_LOGOUT"
+          echo "PASSWORD_LOGOUT=***hidden***"
 
       # 6. Run test
       - name: Run Playwright tests
