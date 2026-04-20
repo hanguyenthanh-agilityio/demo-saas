@@ -11,6 +11,11 @@ test.describe("Ticket Filter by Status", () => {
         await ticketPage.goto();
       });
 
+      await test.step("Reset filter to Any", async () => {
+        await ticketPage.filterByStatus("Any");
+        await ticketPage.waitForTicketsTableReload();
+      });
+
       for (const status of statuses) {
         await test.step(`Filter tickets by status: ${status}`, async () => {
           await ticketPage.filterByStatus(status);
@@ -18,25 +23,35 @@ test.describe("Ticket Filter by Status", () => {
         });
 
         await test.step("Verify filter UI state is correct", async () => {
-          const selected = await ticketPage.statusSelect.inputValue();
+          const selected = await ticketPage.page.getByTestId("ticket-status-select").inputValue();
+
           expect(selected.toLowerCase()).toBe(status.toLowerCase());
         });
 
         await test.step("Verify ticket statuses in table", async () => {
-          await ticketPage.filterByStatus(status);
-        });
-
-        await test.step("Verify ticket statuses", async () => {
-          const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
-
           if (status === "Any") {
+            const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
             expect(visibleStatuses.length).toBeGreaterThan(0);
             return;
           }
 
-          const invalid = visibleStatuses.filter((s) => s.toLowerCase() !== status.toLowerCase());
+          await expect
+            .poll(
+              async () => {
+                const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
 
-          expect(invalid).toEqual([]);
+                const invalid = visibleStatuses.filter(
+                  (s) => s.toLowerCase() !== status.toLowerCase()
+                );
+
+                return invalid.length;
+              },
+              {
+                timeout: 10000,
+                message: `Waiting for all tickets to be ${status}`,
+              }
+            )
+            .toBe(0);
         });
       }
     }
