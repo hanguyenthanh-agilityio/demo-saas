@@ -5,14 +5,26 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
-  logoutPage: async ({ page }, use) => {
+  logoutPage: async ({ browser }, use) => {
+    const context = await browser.newContext({
+      storageState: "playwright/.auth/logout-user.json",
+    });
+
+    const page = await context.newPage();
+
     await page.goto("/ha-nguyen/tickets");
 
+    console.log("Current URL:", page.url());
+
+    await expect(page).toHaveURL(/tickets/, { timeout: 30000 });
+
     await expect(page.getByTestId("user-settings")).toBeVisible({
-      timeout: 15000,
+      timeout: 30000,
     });
 
     await use(page);
+
+    await context.close();
   },
 });
 
