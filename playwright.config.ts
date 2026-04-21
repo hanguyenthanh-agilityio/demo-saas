@@ -16,14 +16,6 @@ export default defineConfig({
 
   workers: isCI ? 1 : undefined,
 
-  // timeout: isCI ? 120 * 1000 : 60 * 1000,
-
-  // globalTimeout: isCI ? 20 * 60 * 1000 : undefined,
-
-  // expect: {
-  //   timeout: 10000,
-  // },
-
   outputDir: "test-results",
 
   reporter: [["list"], ["html", { outputFolder: "playwright-report", open: "never" }]],
