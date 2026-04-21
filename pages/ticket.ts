@@ -428,7 +428,19 @@ export class TicketPage {
   async changeRowsPerPage(size: RowsPerPage) {
     await this.rowsPerPageSelect.click();
 
-    await this.page.locator(`[role="option"][value="${size}"]`).click();
+    const dropdown = this.page.getByRole("listbox");
+
+    await expect(dropdown).toBeVisible();
+
+    const option = dropdown.getByRole("option", {
+      name: new RegExp(`^${size}$`),
+    });
+
+    await expect(option).toBeVisible();
+
+    await option.click();
+
+    await expect(dropdown).toBeHidden();
 
     await this.waitForTicketsTableReload();
   }
