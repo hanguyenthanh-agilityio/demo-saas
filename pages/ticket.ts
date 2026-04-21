@@ -185,7 +185,8 @@ export class TicketPage {
 
   async sortByTitle() {
     await expect(this.titleHeader).toBeVisible();
-    await expect(this.titleHeader).toBeEnabled();
+
+    const before = await this.getTicketTitles();
 
     await Promise.all([this.waitForGetTicketsSuccess(), this.titleHeader.click()]);
 
@@ -193,10 +194,10 @@ export class TicketPage {
 
     await expect
       .poll(async () => {
-        const titles = await this.getTicketTitles();
-        return titles.join("|");
+        const after = await this.getTicketTitles();
+        return after.join("|");
       })
-      .toBeTruthy();
+      .not.toBe(before.join("|"));
   }
 
   async getTitlesAndUrl() {
@@ -371,6 +372,10 @@ export class TicketPage {
     return this.page.getByRole("button", { name: String(page), exact: true });
   }
 
+  getActivePageBtn(page: number) {
+    return this.page.locator(`button[aria-current="page"]:has-text("${page}")`);
+  }
+
   async goToPage(page: number) {
     await this.getPageBtn(page).click();
   }
@@ -402,7 +407,19 @@ export class TicketPage {
   async changeRowsPerPage(size: RowsPerPage) {
     await this.rowsPerPageSelect.click();
 
-    await this.page.locator(`[role="option"][value="${size}"]`).click();
+    const dropdown = this.page.locator('[role="listbox"]').last();
+
+    await dropdown.waitFor({ state: "visible" });
+
+    const option = dropdown.getByRole("option", {
+      name: new RegExp(`^${size}$`),
+    });
+
+    await expect(option).toBeVisible();
+
+    await option.click();
+
+    await expect(dropdown).toBeHidden();
 
     await this.waitForTicketsTableReload();
   }

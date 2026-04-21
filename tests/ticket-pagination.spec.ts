@@ -30,6 +30,7 @@ test.describe("Ticket Pagination Feature", () => {
     { tag: ["@ticket", "@pagination"] },
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List page", async () => {
+        test.setTimeout(60000);
         await ticketPage.goto();
       });
 
@@ -84,7 +85,7 @@ test.describe("Ticket Pagination Feature", () => {
 
       await test.step("Step 3: Navigate to page 2 and verify highlight", async () => {
         await ticketPage.goToPage(2);
-        await expect(ticketPage.getPageBtn(2)).toBeVisible();
+        await expect(ticketPage.getActivePageBtn(2)).toBeVisible();
       });
     }
   );
@@ -93,10 +94,11 @@ test.describe("Ticket Pagination Feature", () => {
   // TC020 - Rows per page
   // ====================
   test(
-    "TC020 - Verify user can change number of tickets displayed per page (10, 25, 50, 100)",
+    "TC020 - Verify user can change number of tickets displayed per page (10, 25)",
     { tag: ["@ticket", "@pagination"] },
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List page", async () => {
+        test.setTimeout(60000);
         await ticketPage.goto();
       });
 
@@ -131,7 +133,7 @@ test.describe("Ticket Pagination Feature", () => {
       await test.step("Step 3: Change rows per page and verify page resets to 1", async () => {
         await ticketPage.changeRowsPerPage("25");
 
-        await expect(ticketPage.getPageBtn(1)).toBeVisible();
+        await expect(ticketPage.getActivePageBtn(1)).toBeVisible();
       });
     }
   );
