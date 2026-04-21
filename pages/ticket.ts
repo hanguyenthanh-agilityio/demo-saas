@@ -372,6 +372,10 @@ export class TicketPage {
     return this.page.getByRole("button", { name: String(page), exact: true });
   }
 
+  getActivePageBtn(page: number) {
+    return this.page.locator(`button[aria-current="page"]:has-text("${page}")`);
+  }
+
   async goToPage(page: number) {
     await this.getPageBtn(page).click();
   }
