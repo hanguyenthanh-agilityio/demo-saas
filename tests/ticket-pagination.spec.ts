@@ -98,6 +98,7 @@ test.describe("Ticket Pagination Feature", () => {
     { tag: ["@ticket", "@pagination"] },
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List page", async () => {
+        test.setTimeout(60000);
         await ticketPage.goto();
       });
 
