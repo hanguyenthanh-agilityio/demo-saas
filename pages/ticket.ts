@@ -428,9 +428,9 @@ export class TicketPage {
   async changeRowsPerPage(size: RowsPerPage) {
     await this.rowsPerPageSelect.click();
 
-    const dropdown = this.page.getByRole("listbox");
+    const dropdown = this.page.locator('[role="listbox"]').last();
 
-    await expect(dropdown).toBeVisible();
+    await dropdown.waitFor({ state: "visible" });
 
     const option = dropdown.getByRole("option", {
       name: new RegExp(`^${size}$`),
