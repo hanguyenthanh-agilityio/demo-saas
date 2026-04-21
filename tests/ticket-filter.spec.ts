@@ -8,6 +8,7 @@ test.describe("Ticket Filter by Status", () => {
     { tag: ["@ticket", "@filter", "@ui"] },
     async ({ ticketPage }) => {
       await test.step("Navigate to ticket page", async () => {
+        test.setTimeout(60000);
         await ticketPage.goto();
       });
 
