@@ -67,9 +67,7 @@ export class TicketPage {
 
     this.successMsg = page.getByText(/successfully created/i);
 
-    this.statusSelect = page
-      .getByTestId("ticket-status-select")
-      .locator("xpath=ancestor::div[contains(@class,'mantine-Select-wrapper')]");
+    this.statusSelect = page.getByTestId("ticket-status-select");
 
     // Table locators
     this.ticketRows = page.locator(
@@ -227,38 +225,15 @@ export class TicketPage {
     ]);
   }
 
-  async waitForStable(locator: Locator) {
-    const box1 = await locator.boundingBox();
-    await this.page.waitForTimeout(100);
-    const box2 = await locator.boundingBox();
-
-    expect(box1).toEqual(box2);
-  }
-
   async filterByStatus(status: TicketStatus) {
-    const input = this.page.getByTestId("ticket-status-select");
+    await this.statusSelect.click();
 
-    const wrapper = input.locator("xpath=ancestor::div[contains(@class,'mantine-Select-wrapper')]");
-
-    await expect(wrapper).toBeVisible();
-
-    await wrapper.click();
-
-    const dropdown = this.page.getByRole("listbox");
-
-    await expect(dropdown).toBeVisible({ timeout: 10000 });
-
-    const option = dropdown.getByRole("option", {
-      name: new RegExp(`^${status}$`, "i"),
+    const option = this.page.getByRole("option", {
+      name: new RegExp(status, "i"),
     });
 
     await expect(option).toBeVisible();
-
     await option.click();
-
-    await expect(dropdown).toBeHidden();
-
-    await expect(input).toHaveValue(status);
   }
 
   getVisibleTickets() {

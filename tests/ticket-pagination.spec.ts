@@ -93,7 +93,7 @@ test.describe("Ticket Pagination Feature", () => {
   // TC020 - Rows per page
   // ====================
   test(
-    "TC020 - Verify user can change number of tickets displayed per page (10, 25, 50, 100)",
+    "TC020 - Verify user can change number of tickets displayed per page (10, 25)",
     { tag: ["@ticket", "@pagination"] },
     async ({ ticketPage }) => {
       await test.step("Step 1: Navigate to Ticket List page", async () => {
