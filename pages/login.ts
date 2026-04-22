@@ -27,7 +27,14 @@ export class LoginPage {
 
   async goto() {
     await this.page.goto("/");
-    await this.page.locator("header").getByRole("button", { name: "Log in" }).click();
+
+    const loginBtn = this.page.locator("header").getByRole("button", { name: /log in/i });
+
+    await loginBtn.waitFor({ state: "visible" });
+
+    await this.page.waitForLoadState("domcontentloaded");
+
+    await loginBtn.click();
 
     await expect(this.emailInput).toBeVisible();
   }
@@ -47,7 +54,8 @@ export class LoginPage {
       (res) => res.url().includes("/auth") && res.request().method() === "POST"
     );
 
-    await this.login(email, password);
+    await this.loginButton.click();
+
     return await resPromise;
   }
   // Error handling

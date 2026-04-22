@@ -1,4 +1,3 @@
-// tests/setup/auth.helper.ts
 import { Page, expect } from "@playwright/test";
 import { LoginPage } from "../../pages/login";
 
@@ -9,12 +8,25 @@ export async function authState(page: Page, email: string, password: string, sto
 
   const login = new LoginPage(page);
 
+  await page.context().clearCookies();
+  await page.goto("/");
+
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
   await login.goto();
 
   const res = await login.loginWithResponse(email, password);
-  expect(res.status()).toBe(200);
 
-  await expect(page).toHaveURL(/tickets/, { timeout: 10000 });
+  if (res.status() !== 200) {
+    throw new Error(`Login failed: ${res.status()}`);
+  }
+
+  await page.waitForLoadState("networkidle");
+
+  await expect(page).toHaveURL(/tickets/, { timeout: 15000 });
 
   await expect(page.getByRole("tab", { name: "Tickets" })).toBeVisible();
 

@@ -7,8 +7,18 @@ type Fixtures = {
 
 export const test = base.extend<Fixtures>({
   loginPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+
+    await page.goto("/");
+
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+
     const loginPage = new LoginPage(page);
     await loginPage.goto();
+
     await use(loginPage);
   },
 });

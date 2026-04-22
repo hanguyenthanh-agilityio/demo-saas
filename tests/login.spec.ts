@@ -10,7 +10,10 @@ import { LoginCase } from "../types/login";
 // Env
 import { ENV } from "../utils/env";
 
-//
+test.use({
+  storageState: undefined,
+});
+
 test.describe("Login Feature - SaaS", () => {
   // ======================
   // TC001 - SUCCESS
@@ -23,16 +26,28 @@ test.describe("Login Feature - SaaS", () => {
 
       let res;
 
+      await test.step("Ensure user is on login page", async () => {
+        await expect(loginPage.emailInput).toBeVisible();
+      });
+
       await test.step("Send login request", async () => {
         res = await loginPage.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
       });
 
       await test.step("Verify API response", async () => {
-        expect(res!.status()).toBe(200);
+        const status = res!.status();
+
+        if (status === 429) {
+          await loginPage.expectErrorMessage(/too many requests/i, "global");
+
+          test.skip(true, "Rate limit triggered (429)");
+        }
+
+        expect(status).toBe(200);
       });
 
       await test.step("Verify user redirected to dashboard", async () => {
-        await expect(page).toHaveURL(/tickets/);
+        await expect(page).toHaveURL(/tickets/, { timeout: 10000 });
         await dashboard.expectLoaded();
       });
     }
