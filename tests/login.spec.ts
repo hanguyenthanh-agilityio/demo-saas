@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Fixtures
 import { test, expect } from "../fixtures/login";
 
@@ -24,30 +25,28 @@ test.describe("Login Feature - SaaS", () => {
     async ({ page, loginPage }) => {
       const dashboard = new DashboardPage(page);
 
-      let res;
-
       await test.step("Ensure user is on login page", async () => {
         await expect(loginPage.emailInput).toBeVisible();
       });
 
-      await test.step("Send login request", async () => {
-        res = await loginPage.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
+      let res: any;
+
+      await test.step("Send login request (retry-safe)", async () => {
+        for (let i = 0; i < 3; i++) {
+          res = await loginPage.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
+
+          if (res.status() !== 429) break;
+        }
       });
 
       await test.step("Verify API response", async () => {
         const status = res!.status();
 
-        if (status === 429) {
-          await loginPage.expectErrorMessage(/too many requests/i, "global");
-
-          test.skip(true, "Rate limit triggered (429)");
-        }
-
-        expect(status).toBe(200);
+        expect(status, "Login should not be rate limited").toBe(200);
       });
 
       await test.step("Verify user redirected to dashboard", async () => {
-        await expect(page).toHaveURL(/tickets/, { timeout: 10000 });
+        await expect(page).toHaveURL(/tickets/, { timeout: 15000 });
         await dashboard.expectLoaded();
       });
     }

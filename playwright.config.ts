@@ -29,6 +29,7 @@ export default defineConfig({
     {
       name: "setup-auth",
       testMatch: /.*auth\.setup\.ts/,
+      workers: 1,
     },
     {
       name: "setup-logout-user",

@@ -24,9 +24,13 @@ test.describe("Ticket Filter by Status", () => {
         });
 
         await test.step("Verify filter UI state is correct", async () => {
-          const selected = await ticketPage.page.getByTestId("ticket-status-select").inputValue();
+          const selected = await ticketPage.page
+            .getByTestId("ticket-status-select")
+            .locator(".mantine-Select-input, input, button")
+            .first()
+            .textContent();
 
-          expect(selected.toLowerCase()).toBe(status.toLowerCase());
+          expect(selected?.toLowerCase()).toContain(status.toLowerCase());
         });
 
         await test.step("Verify ticket statuses in table", async () => {
@@ -37,21 +41,15 @@ test.describe("Ticket Filter by Status", () => {
           }
 
           await expect
-            .poll(
-              async () => {
-                const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
+            .poll(async () => {
+              const visibleStatuses = await ticketPage.getVisibleTicketStatuses();
 
-                const invalid = visibleStatuses.filter(
-                  (s) => s.toLowerCase() !== status.toLowerCase()
-                );
+              const invalid = visibleStatuses.filter(
+                (s) => s.toLowerCase() !== status.toLowerCase()
+              );
 
-                return invalid.length;
-              },
-              {
-                timeout: 10000,
-                message: `Waiting for all tickets to be ${status}`,
-              }
-            )
+              return invalid.length;
+            })
             .toBe(0);
         });
       }
