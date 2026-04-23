@@ -30,8 +30,6 @@ export class LoginPage {
 
     const loginBtn = this.page.locator("header").getByRole("button", { name: /log in/i });
 
-    await loginBtn.waitFor({ state: "visible" });
-
     await this.page.waitForLoadState("domcontentloaded");
 
     await loginBtn.click();

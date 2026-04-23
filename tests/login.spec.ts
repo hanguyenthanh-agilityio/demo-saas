@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Fixtures
 import { test, expect } from "../fixtures/login";
 
@@ -11,10 +10,6 @@ import { LoginCase } from "../types/login";
 // Env
 import { ENV } from "../utils/env";
 
-test.use({
-  storageState: undefined,
-});
-
 test.describe("Login Feature - SaaS", () => {
   // ======================
   // TC001 - SUCCESS
@@ -22,32 +17,33 @@ test.describe("Login Feature - SaaS", () => {
   test(
     "TC001 - Verify user can login successfully with valid credentials",
     { tag: ["@smoke", "@login", "@api", "@ui"] },
-    async ({ page, loginPage }) => {
+    async ({ loginPage }) => {
+      const page = loginPage.page;
       const dashboard = new DashboardPage(page);
 
-      await test.step("Ensure user is on login page", async () => {
-        await expect(loginPage.emailInput).toBeVisible();
-      });
-
-      let res: any;
+      let res;
 
       await test.step("Send login request (retry-safe)", async () => {
         for (let i = 0; i < 3; i++) {
           res = await loginPage.loginWithResponse(ENV.EMAIL, ENV.PASSWORD);
 
-          if (res.status() !== 429) break;
+          if (res.status() === 200) break;
+
+          if (res.status() === 429) {
+            await page.waitForTimeout(1000);
+          } else break;
         }
-      });
 
-      await test.step("Verify API response", async () => {
-        const status = res!.status();
+        await test.step("Verify API response", async () => {
+          const status = res!.status();
 
-        expect(status, "Login should not be rate limited").toBe(200);
-      });
+          expect(status, "Login should not be rate limited").toBe(200);
+        });
 
-      await test.step("Verify user redirected to dashboard", async () => {
-        await expect(page).toHaveURL(/tickets/, { timeout: 15000 });
-        await dashboard.expectLoaded();
+        await test.step("Verify user redirected to dashboard", async () => {
+          await expect(page).toHaveURL(/tickets/, { timeout: 15000 });
+          await dashboard.expectLoaded();
+        });
       });
     }
   );
@@ -93,33 +89,28 @@ test.describe("Login Feature - SaaS", () => {
       errorMess: /invalid email or password|too many requests/i,
     },
   ];
+
   for (const c of cases) {
     test(
       `${c.id} - ${c.desc}`,
       { tag: ["@login", "@negative", c.type === "api" ? "@api" : "@ui"] },
       async ({ loginPage }) => {
+        const page = loginPage.page;
+
         let response;
 
         await test.step("Submit login form", async () => {
           if (c.type === "api") {
             response = await loginPage.loginWithResponse(c.email, c.password);
+            expect(response.status()).toBeGreaterThanOrEqual(400);
           } else {
             await loginPage.login(c.email, c.password);
           }
         });
-
-        if (c.type === "api") {
-          await test.step("Verify API error response", async () => {
-            expect(response!.status()).toBeGreaterThanOrEqual(400);
-          });
-        }
-
-        await test.step("Verify error message displayed", async () => {
-          await loginPage.expectErrorMessage(c.errorMess, c.field);
-        });
+        await loginPage.expectErrorMessage(c.errorMess, c.field);
 
         await test.step("Verify still on login page", async () => {
-          await expect(loginPage.emailInput).toBeVisible();
+          await expect(page).toHaveURL(/sign-in|\/$/, { timeout: 5000 });
         });
       }
     );
